@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "651849036459",
+    "project_id": "hermes-c331d",
+    "storage_bucket": "hermes-c331d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651849036459:android:813899c4edb918149c7dee",
+        "android_client_info": {
+          "package_name": "com.nonobo.hermes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "651849036459-cp1h8e065l1bf9i1h0rhlfoqt4uvu5fu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT7efEgjUcb2KFkuNyBwKh3zB6zSppoS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651849036459-cp1h8e065l1bf9i1h0rhlfoqt4uvu5fu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
