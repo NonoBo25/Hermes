@@ -20,5 +20,19 @@ namespace Hermes
             var regex = new Regex(pattern, RegexOptions.None);
             return regex.IsMatch(email);
         }
+        public static bool IsValidString(string str)
+        {
+            if (str != null)
+            {
+                if (str.Length != 0)
+                {
+                    if (str != "")
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
