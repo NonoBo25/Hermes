@@ -26,7 +26,14 @@ namespace Hermes
             ISharedPreferences mPref = Application.Context.GetSharedPreferences("Users", FileCreationMode.Private);
             string email = mPref.GetString("email", null);
             string password = mPref.GetString("password", null);
-            return !(email.Equals(null) || password.Equals(null));
+            try
+            {
+                return !(email.Equals(null) || password.Equals(null));
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 

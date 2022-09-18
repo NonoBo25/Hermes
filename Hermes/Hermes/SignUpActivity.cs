@@ -16,17 +16,13 @@ using System.Text.RegularExpressions;
 namespace Hermes
 {
     [Activity(Label = "SignUpActivity")]
-    public class SignUpActivity : Activity,IOnCompleteListener
+    public class SignUpActivity : Activity
     {
         private Button signup;
         private EditText email,username,password1,password2;
-        private FirebaseAuth mAuth;
-        private DatabaseReference mRef;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            mAuth = FirebaseAuth.Instance;
-            mRef = FirebaseDatabase.Instance.GetReference("/users");
             SetContentView(Resource.Layout.activity_signup);
             signup = FindViewById<Button>(Resource.Id.signup_signup);
             email = FindViewById<EditText>(Resource.Id.signup_email);
@@ -53,17 +49,8 @@ namespace Hermes
                 Toast.MakeText(this, "Invalid Username!", ToastLength.Long).Show();
                 return;
             }
-            mAuth.CreateUserWithEmailAndPassword(email.Text, password1.Text).AddOnCompleteListener(this);
-
-        }
-
-        public void OnComplete(Task task)
-        {
-            if (task.IsSuccessful)
+            if(AuthManager.SignUp(email.Text, password1.Text, username.Text))
             {
-                SharedPrefrenceManager.SaveUser(email.Text, password1.Text);
-                User u = new User(username.Text);
-                mRef.Child(mAuth.Uid).SetValue(u.ToHashMap());
                 Intent i = new Intent(this, typeof(MainPageActivity));
                 StartActivity(i);
             }
@@ -72,7 +59,10 @@ namespace Hermes
                 Toast.MakeText(this, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
                 return;
             }
+
         }
+
+
 
 
     }
