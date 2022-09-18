@@ -13,6 +13,11 @@ namespace Hermes
         private Button toSignIn, toSignUp;
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            if (SharedPrefrenceManager.IsLoggedIn())
+            {
+                Intent i = new Intent(this, typeof(MainPageActivity));
+                StartActivity(i);
+            }
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             // Set our view from the "main" layout resource
