@@ -15,13 +15,13 @@ using System.Text;
 namespace Hermes
 {
     [Activity(Label = "SignInActivity")]
-    public class SignInActivity : Activity,IOnCompleteListener
+    public class SignInActivity : Activity
     {
         private Button signin;
         private TextView email, password;
         private FirebaseAuth mAuth;
         private DatabaseReference mReference;
-
+        
 
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -43,7 +43,7 @@ namespace Hermes
             {
                 if (TextHelper.IsValidString(password.Text))
                 {
-                    mAuth.SignInWithEmailAndPassword(email.Text, password.Text).AddOnCompleteListener(this);
+                    mAuth.SignInWithEmailAndPassword(email.Text, password.Text).AddOnCompleteListener(new SignInListener(this));
                 }
                 else
                 {
@@ -58,18 +58,27 @@ namespace Hermes
                 return;
             }
         }
-        public void OnComplete(Task task)
+
+        class SignInListener : Java.Lang.Object, IOnCompleteListener
         {
-            if (task.IsSuccessful)
+            private SignInActivity obj;
+            public SignInListener(SignInActivity context)
             {
-                SharedPrefrenceManager.SaveUser(email.Text, password.Text);
-                Intent i = new Intent(this, typeof(MainPageActivity));
-                StartActivity(i);
+                obj = context;
             }
-            else
+            public void OnComplete(Task task)
             {
-                Toast.MakeText(this, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
-                return;
+                if (task.IsSuccessful)
+                {
+                    SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password.Text);
+                    Intent i = new Intent(obj, typeof(MainPageActivity));
+                    obj.StartActivity(i);
+                }
+                else
+                {
+                    Toast.MakeText(obj, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
+                    return;
+                }
             }
         }
     }

@@ -16,7 +16,7 @@ using System.Text.RegularExpressions;
 namespace Hermes
 {
     [Activity(Label = "SignUpActivity")]
-    public class SignUpActivity : Activity,IOnCompleteListener
+    public class SignUpActivity : Activity
     {
         private Button signup;
         private EditText email,username,password1,password2;
@@ -54,26 +54,32 @@ namespace Hermes
                 Toast.MakeText(this, "Invalid Username!", ToastLength.Long).Show();
                 return;
             }
-            mAuth.CreateUserWithEmailAndPassword(email.Text, password1.Text).AddOnCompleteListener(this);
+            mAuth.CreateUserWithEmailAndPassword(email.Text, password1.Text).AddOnCompleteListener(new SignUpListener(this));
 
         }
-
-
-        public void OnComplete(Task task)
+        class SignUpListener : Java.Lang.Object, IOnCompleteListener
         {
-            if (task.IsSuccessful)
+            private SignUpActivity obj;
+            public SignUpListener(SignUpActivity obj)
             {
-                SharedPrefrenceManager.SaveUser(email.Text, password1.Text);
-                mReference.Child(mAuth.CurrentUser.Uid).SetValue(new User(username.Text).ToHashMap());
-                Intent i = new Intent(this, typeof(MainPageActivity));
-                StartActivity(i);
+                this.obj = obj;
             }
-            else
+
+            public void OnComplete(Task task)
             {
-                Toast.MakeText(this, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
-                return;
+                if (task.IsSuccessful)
+                {
+                    SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password1.Text);
+                    obj.mReference.Child(obj.mAuth.CurrentUser.Uid).SetValue(new User(obj.username.Text).ToHashMap());
+                    Intent i = new Intent(obj, typeof(MainPageActivity));
+                    obj.StartActivity(i);
+                }
+                else
+                {
+                    Toast.MakeText(obj, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
+                    return;
+                }
             }
         }
-
     }
 }

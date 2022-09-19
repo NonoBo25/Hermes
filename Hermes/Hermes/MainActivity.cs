@@ -10,22 +10,22 @@ namespace Hermes
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        private Button toSignIn, toSignUp;
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            base.OnCreate(savedInstanceState);
+            Intent i;
             if (SharedPrefrenceManager.IsLoggedIn())
             {
-                Intent i = new Intent(this, typeof(MainPageActivity));
-                StartActivity(i);
+                i = new Intent(this, typeof(MainPageActivity));
+
             }
-            base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.activity_main);
-            toSignIn = FindViewById<Button>(Resource.Id.mainactivity_to_signin);
-            toSignUp =FindViewById<Button>(Resource.Id.mainactivity_to_signup);
-            toSignUp.Click += delegate { Intent i = new Intent(this, typeof(SignUpActivity)); StartActivity(i); };
-            toSignIn.Click += delegate { Intent i = new Intent(this, typeof(SignInActivity)); StartActivity(i); };
+            else
+            {
+                i = new Intent(this, typeof(AuthMenuActivity));
+            }
+            i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask |ActivityFlags.ClearTop);
+            StartActivity(i);
+            Finish();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
