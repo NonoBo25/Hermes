@@ -66,11 +66,20 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\AuthMenuActivity.cs" />
+    <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Activities\MainPageActivity.cs" />
+    <Compile Include="Activities\SignInActivity.cs" />
+    <Compile Include="Activities\SignUpActivity.cs" />
     <Compile Include="AuthMenuActivity.cs" />
     <Compile Include="IFirebaseObject.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainPageActivity.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="Objects\IFirebaseObject.cs" />
+    <Compile Include="Objects\Message.cs" />
+    <Compile Include="Objects\User.cs" />
+    <Compile Include="Objects\UserData.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharedPrefrenceManager.cs" />
@@ -78,6 +87,7 @@
     <Compile Include="SignUpActivity.cs" />
     <Compile Include="TextHelper.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="UserData.cs" />
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
@@ -162,6 +172,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_mainpage.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

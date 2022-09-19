@@ -36,6 +36,15 @@ namespace Hermes
             }
         }
 
+        public static UserData GetLoggedUser()
+        {
+            ISharedPreferences mPref = Application.Context.GetSharedPreferences("Users", FileCreationMode.Private);
+            string email = mPref.GetString("email", null);
+            string password = mPref.GetString("password", null);
+            return new UserData { Email = email, Password = password };
+
+        }
+
 
     }
 }
