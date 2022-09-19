@@ -16,8 +16,11 @@ namespace Hermes
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
             mAuth = FirebaseAuth.Instance;
-            Intent i;
+            Intent i; 
+            Intent serviceToStart = new Intent(this, typeof(CommunicationService));
+            StartService(serviceToStart);
             if (SharedPrefrenceManager.IsLoggedIn())
             {
                 if (mAuth.CurrentUser == null)

@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
@@ -19,6 +20,7 @@ namespace Hermes
         LinearLayout layout;
         DatabaseReference mRef;
         FirebaseAuth mAuth;
+        CommunicationServiceConnection serviceConnection;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -27,7 +29,17 @@ namespace Hermes
             layout = FindViewById<LinearLayout>(Resource.Id.bg);
             mAuth = FirebaseAuth.Instance;
             mRef = FirebaseDatabase.Instance.GetReference("/inboxes");
-            mRef.AddValueEventListener(new InboxListener(this));
+            //mRef.AddValueEventListener(new InboxListener(this));
+        }
+        protected override void OnStart()
+        {
+            base.OnStart();
+            if (serviceConnection == null)
+            {
+                this.serviceConnection = new CommunicationServiceConnection();
+            }
+            Intent serviceToStart = new Intent(this,typeof(CommunicationService));
+            BindService(serviceToStart, this.serviceConnection, Bind.AutoCreate);
         }
         class InboxListener : Java.Lang.Object, IValueEventListener
         {
