@@ -71,6 +71,9 @@
     <Compile Include="Activities\MainPageActivity.cs" />
     <Compile Include="Activities\SignInActivity.cs" />
     <Compile Include="Activities\SignUpActivity.cs" />
+    <Compile Include="AlarmHandler.cs" />
+    <Compile Include="AndroidNotificationManager.cs" />
+    <Compile Include="BootReceiver.cs" />
     <Compile Include="Objects\IFirebaseObject.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\User.cs" />
@@ -142,6 +145,12 @@
     <PackageReference Include="Xamarin.Firebase.Database">
       <Version>120.0.6</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Iid">
+      <Version>121.1.0.7</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Messaging">
+      <Version>123.0.8</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.0.0.1" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
     <PackageReference Include="Xamarin.GooglePlayServices.Base">
@@ -166,7 +175,9 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_mainpage.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\xamagonBlue.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

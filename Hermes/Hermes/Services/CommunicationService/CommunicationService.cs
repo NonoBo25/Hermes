@@ -1,10 +1,14 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Gms.Tasks;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.App;
+using Firebase.Auth;
+using Firebase.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +16,12 @@ using System.Text;
 
 namespace Hermes
 {
-    [Service(Name ="com.nonobo.hermes.CommunicationService",Enabled =true)]
-    public class CommunicationService : Service
+    [Service(Name ="com.nonobo.hermes.CommunicationService",Enabled =true,Exported =true)]
+    public class CommunicationService : Service, IValueEventListener,IOnCompleteListener
     {
+        private AndroidNotificationManager notificationManager;
         static readonly string TAG = typeof(CommunicationService).FullName;
-
+        private DatabaseReference _database;
         public IBinder Binder { get; private set; }
         public override IBinder OnBind(Intent intent)
         {
@@ -24,24 +29,73 @@ namespace Hermes
             this.Binder = new CommunicationBinder(this);
             return this.Binder;
         }
+        public override void OnStart(Intent intent, int startId)
+        {
+            base.OnStart(intent, startId);
+            
+
+            _database.AddValueEventListener(this);
+        }
         public override void OnCreate()
         {
-            // This method is optional to implement
             base.OnCreate();
-            Log.Debug(TAG, "OnCreate");
+            Log.Info(TAG, "Entered OnCreate");
+
+            notificationManager = new AndroidNotificationManager();
+            Log.Info(TAG, "created notification Manager");
+
+            if (FirebaseAuth.Instance.CurrentUser == null)
+            {
+                Log.Info(TAG, "User not logged");
+                UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
+                FirebaseAuth.Instance.SignInWithEmailAndPassword(loggedUser.Email, loggedUser.Password).AddOnCompleteListener(this);
+                Log.Info(TAG, "User created login");
+            }
+            else
+            {
+                Log.Info(TAG, "User loggedin"+" "+FirebaseAuth.Instance.CurrentUser.Email);
+                _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
+                Log.Info(TAG, "database connceted");
+            }
+            Log.Info(TAG, "complete");
+            notificationManager.SendNotification("Service Created", "Service Created");
+
         }
         public override bool OnUnbind(Intent intent)
         {
-            // This method is optional to implement
             Log.Debug(TAG, "OnUnbind");
             return base.OnUnbind(intent);
         }
         public override void OnDestroy()
         {
-            // This method is optional to implement
-            Log.Debug(TAG, "OnDestroy");
-            Binder = null;
-            base.OnDestroy();
+            Log.Info(TAG, "destroy");
+            Intent i = new Intent(this, typeof(CommunicationService));
+            StartForegroundService(i);
         }
+
+        public void OnCancelled(DatabaseError error)
+        {
+            Log.Info(TAG, "cancelled");
+            Intent i = new Intent(this, typeof(CommunicationService));
+            StartForegroundService(i);
+        }
+
+        public void OnDataChange(DataSnapshot snapshot)
+        {
+
+            Log.Info(TAG, "Datachange");
+            notificationManager.SendNotification("New Messages", "You Have New Messages");
+        }
+
+        public void OnComplete(Task task)
+        {
+            Log.Info(TAG, "Login Complete");
+            if (task.IsSuccessful)
+            {
+                Log.Info(TAG, "Login Success " + FirebaseAuth.Instance.CurrentUser.Email);
+                _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
+            }
+        }
+
     }
 }

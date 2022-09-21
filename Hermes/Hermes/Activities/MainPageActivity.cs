@@ -20,11 +20,10 @@ namespace Hermes
         LinearLayout layout;
         DatabaseReference mRef;
         FirebaseAuth mAuth;
-        CommunicationServiceConnection serviceConnection;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            Log.Info("Main", "MainActivity");
             SetContentView(Resource.Layout.activity_mainpage);
             layout = FindViewById<LinearLayout>(Resource.Id.bg);
             mAuth = FirebaseAuth.Instance;
@@ -34,12 +33,8 @@ namespace Hermes
         protected override void OnStart()
         {
             base.OnStart();
-            if (serviceConnection == null)
-            {
-                this.serviceConnection = new CommunicationServiceConnection();
-            }
-            Intent serviceToStart = new Intent(this,typeof(CommunicationService));
-            BindService(serviceToStart, this.serviceConnection, Bind.AutoCreate);
+            //Intent serviceToStart = new Intent(this, typeof(CommunicationService));
+            //StartService(serviceToStart);
         }
         class InboxListener : Java.Lang.Object, IValueEventListener
         {

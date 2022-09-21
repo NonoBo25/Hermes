@@ -1,26 +1,30 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.Gms.Tasks;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Widget;
 using AndroidX.AppCompat.App;
+using AndroidX.Core.App;
 using Firebase.Auth;
+using Firebase.Iid;
 
 namespace Hermes
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true,Enabled =true)]
     public class MainActivity : AppCompatActivity,IOnCompleteListener
     {
         FirebaseAuth mAuth;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
             mAuth = FirebaseAuth.Instance;
-            Intent i; 
-            Intent serviceToStart = new Intent(this, typeof(CommunicationService));
-            StartService(serviceToStart);
+            Intent i;
+            new AndroidNotificationManager().SendNotification("Hello", "Hi");
+
             if (SharedPrefrenceManager.IsLoggedIn())
             {
                 if (mAuth.CurrentUser == null)
@@ -68,5 +72,6 @@ namespace Hermes
                 Finish();
             }
         }
+
     }
 }

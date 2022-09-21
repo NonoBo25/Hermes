@@ -3499,6 +3499,9 @@ namespace Hermes
 			// aapt resource value: 0x7F070095
 			public const int tooltip_frame_light = 2131165333;
 			
+			// aapt resource value: 0x7F070096
+			public const int xamagonBlue = 2131165334;
+			
 			static Drawable()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -4895,52 +4898,55 @@ namespace Hermes
 			public const int fallback_menu_item_share_link = 2131755065;
 			
 			// aapt resource value: 0x7F10003A
-			public const int firebase_database_url = 2131755066;
+			public const int fcm_fallback_notification_channel_label = 2131755066;
 			
 			// aapt resource value: 0x7F10003B
-			public const int gcm_defaultSenderId = 2131755067;
+			public const int firebase_database_url = 2131755067;
 			
 			// aapt resource value: 0x7F10003C
-			public const int google_api_key = 2131755068;
+			public const int gcm_defaultSenderId = 2131755068;
 			
 			// aapt resource value: 0x7F10003D
-			public const int google_app_id = 2131755069;
+			public const int google_api_key = 2131755069;
 			
 			// aapt resource value: 0x7F10003E
-			public const int google_crash_reporting_api_key = 2131755070;
+			public const int google_app_id = 2131755070;
 			
 			// aapt resource value: 0x7F10003F
-			public const int google_storage_bucket = 2131755071;
+			public const int google_crash_reporting_api_key = 2131755071;
 			
 			// aapt resource value: 0x7F100040
-			public const int hide_bottom_view_on_scroll_behavior = 2131755072;
+			public const int google_storage_bucket = 2131755072;
 			
 			// aapt resource value: 0x7F100041
-			public const int mtrl_chip_close_icon_content_description = 2131755073;
+			public const int hide_bottom_view_on_scroll_behavior = 2131755073;
 			
 			// aapt resource value: 0x7F100042
-			public const int password_toggle_content_description = 2131755074;
+			public const int mtrl_chip_close_icon_content_description = 2131755074;
 			
 			// aapt resource value: 0x7F100043
-			public const int path_password_eye = 2131755075;
+			public const int password_toggle_content_description = 2131755075;
 			
 			// aapt resource value: 0x7F100044
-			public const int path_password_eye_mask_strike_through = 2131755076;
+			public const int path_password_eye = 2131755076;
 			
 			// aapt resource value: 0x7F100045
-			public const int path_password_eye_mask_visible = 2131755077;
+			public const int path_password_eye_mask_strike_through = 2131755077;
 			
 			// aapt resource value: 0x7F100046
-			public const int path_password_strike_through = 2131755078;
+			public const int path_password_eye_mask_visible = 2131755078;
 			
 			// aapt resource value: 0x7F100047
-			public const int project_id = 2131755079;
+			public const int path_password_strike_through = 2131755079;
 			
 			// aapt resource value: 0x7F100048
-			public const int search_menu_title = 2131755080;
+			public const int project_id = 2131755080;
 			
 			// aapt resource value: 0x7F100049
-			public const int status_bar_notification_info_overflow = 2131755081;
+			public const int search_menu_title = 2131755081;
+			
+			// aapt resource value: 0x7F10004A
+			public const int status_bar_notification_info_overflow = 2131755082;
 			
 			static String()
 			{
