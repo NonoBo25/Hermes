@@ -80,11 +80,23 @@ namespace Hermes
 
         public void Show(string title, string message)
         {
-            Intent intent = new Intent(AndroidApp.Context, typeof(MainPageActivity));
+            Intent intent = new Intent(AndroidApp.Context, typeof(MainActivity));
             intent.PutExtra(TitleKey, title);
             intent.PutExtra(MessageKey, message);
-            
-            PendingIntent pendingIntent = PendingIntent.GetActivity(AndroidApp.Context, ++pendingIntentId, intent, PendingIntentFlags.UpdateCurrent);
+            intent.AddFlags(ActivityFlags.NewTask);
+            PendingIntent pendingIntent;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+            {
+                pendingIntent = PendingIntent.GetActivity(AndroidApp.Context,
+                        0, intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+
+            }
+            else
+            {
+                pendingIntent = PendingIntent.GetActivity(AndroidApp.Context,
+                                        0, intent, PendingIntentFlags.UpdateCurrent);
+
+            }
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(AndroidApp.Context, channelId)
                 .SetContentIntent(pendingIntent)

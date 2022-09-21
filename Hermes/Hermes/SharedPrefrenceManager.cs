@@ -42,9 +42,19 @@ namespace Hermes
             string email = mPref.GetString("email", null);
             string password = mPref.GetString("password", null);
             return new UserData { Email = email, Password = password };
-
+        }
+        public static void StartService()
+        {
+            ISharedPreferencesEditor mEdit = Application.Context.GetSharedPreferences("Logged", FileCreationMode.Private).Edit();
+            mEdit.PutBoolean("Logged", true);
+            mEdit.Apply();
         }
 
+        public static bool CanStartService()
+        {
+            ISharedPreferences mPref = Application.Context.GetSharedPreferences("Users", FileCreationMode.Private);
+            return mPref.GetBoolean("email", false); 
+        }
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Gms.Tasks;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -29,37 +30,46 @@ namespace Hermes
             this.Binder = new CommunicationBinder(this);
             return this.Binder;
         }
-        public override void OnStart(Intent intent, int startId)
-        {
-            base.OnStart(intent, startId);
-            
 
-            _database.AddValueEventListener(this);
-        }
         public override void OnCreate()
         {
             base.OnCreate();
             Log.Info(TAG, "Entered OnCreate");
-
-            notificationManager = new AndroidNotificationManager();
-            Log.Info(TAG, "created notification Manager");
-
-            if (FirebaseAuth.Instance.CurrentUser == null)
+            Intent intent = new Intent(this.ApplicationContext, typeof(MainActivity));
+            intent.AddFlags(ActivityFlags.NewTask);
+            PendingIntent pendingIntent;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
             {
-                Log.Info(TAG, "User not logged");
-                UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
-                FirebaseAuth.Instance.SignInWithEmailAndPassword(loggedUser.Email, loggedUser.Password).AddOnCompleteListener(this);
-                Log.Info(TAG, "User created login");
+                pendingIntent = PendingIntent.GetActivity(ApplicationContext,
+                        0, intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+
             }
             else
             {
-                Log.Info(TAG, "User loggedin"+" "+FirebaseAuth.Instance.CurrentUser.Email);
-                _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
-                Log.Info(TAG, "database connceted");
-            }
-            Log.Info(TAG, "complete");
-            notificationManager.SendNotification("Service Created", "Service Created");
+                pendingIntent = PendingIntent.GetActivity(ApplicationContext,
+                                        0, intent, PendingIntentFlags.UpdateCurrent);
 
+            }
+            notificationManager = new AndroidNotificationManager();
+            NotificationManager nm = (NotificationManager)GetSystemService(Context.NotificationService);
+
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationContext, "default")
+                .SetContentIntent(pendingIntent)
+                .SetContentTitle("Service")
+                .SetContentText("Started")
+                .SetLargeIcon(BitmapFactory.DecodeResource(ApplicationContext.Resources, Resource.Drawable.xamagonBlue))
+                .SetSmallIcon(Resource.Drawable.xamagonBlue)
+                .SetDefaults((int)NotificationDefaults.Sound | (int)NotificationDefaults.Vibrate);
+            StartForeground(1, builder.Build());
+            
+            Log.Info(TAG, "created notification Manager");
+            if (SharedPrefrenceManager.IsLoggedIn())
+            {
+                Login();
+            }
+            
+            Log.Info(TAG, "complete");
         }
         public override bool OnUnbind(Intent intent)
         {
@@ -82,7 +92,6 @@ namespace Hermes
 
         public void OnDataChange(DataSnapshot snapshot)
         {
-
             Log.Info(TAG, "Datachange");
             notificationManager.SendNotification("New Messages", "You Have New Messages");
         }
@@ -93,7 +102,28 @@ namespace Hermes
             if (task.IsSuccessful)
             {
                 Log.Info(TAG, "Login Success " + FirebaseAuth.Instance.CurrentUser.Email);
-                _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
+                InitDb();
+            }
+        }
+        private void InitDb()
+        {
+            _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
+            _database.AddValueEventListener(this);
+        }
+        public void Login()
+        {
+            if (FirebaseAuth.Instance.CurrentUser == null)
+            {
+                Log.Info(TAG, "User not logged");
+                UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
+                FirebaseAuth.Instance.SignInWithEmailAndPassword(loggedUser.Email, loggedUser.Password).AddOnCompleteListener(this);
+                Log.Info(TAG, "User created login");
+            }
+            else
+            {
+                Log.Info(TAG, "User loggedin" + " " + FirebaseAuth.Instance.CurrentUser.Email);
+                InitDb();
+                Log.Info(TAG, "database connceted");
             }
         }
 

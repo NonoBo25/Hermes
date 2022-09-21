@@ -72,6 +72,7 @@ namespace Hermes
                     SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password1.Text);
                     obj.mReference.Child(obj.mAuth.CurrentUser.Uid).SetValue(new User(obj.username.Text).ToHashMap());
                     Intent i = new Intent(obj, typeof(MainPageActivity));
+                    i.PutExtra("StartService", true);
                     obj.StartActivity(i);
                 }
                 else

@@ -14,7 +14,8 @@ using Firebase.Iid;
 namespace Hermes
 {
 
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true,Enabled =true)]
+
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true,Enabled =true,Exported =true, LaunchMode = LaunchMode.SingleTop)]
     public class MainActivity : AppCompatActivity,IOnCompleteListener
     {
         FirebaseAuth mAuth;
@@ -23,8 +24,6 @@ namespace Hermes
             base.OnCreate(savedInstanceState);
             mAuth = FirebaseAuth.Instance;
             Intent i;
-            new AndroidNotificationManager().SendNotification("Hello", "Hi");
-
             if (SharedPrefrenceManager.IsLoggedIn())
             {
                 if (mAuth.CurrentUser == null)

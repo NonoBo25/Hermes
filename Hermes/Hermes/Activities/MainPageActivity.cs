@@ -14,7 +14,7 @@ using System.Text;
 
 namespace Hermes
 {
-    [Activity(Label = "MainPageActivity")]
+    [Activity(Label = "MainPageActivity", Enabled = true,Exported =true)]
     public class MainPageActivity : Activity
     {
         LinearLayout layout;
@@ -29,6 +29,12 @@ namespace Hermes
             mAuth = FirebaseAuth.Instance;
             mRef = FirebaseDatabase.Instance.GetReference("/inboxes");
             //mRef.AddValueEventListener(new InboxListener(this));
+            if (Intent.GetBooleanExtra("StartService", false))
+            {
+                SharedPrefrenceManager.StartService();
+                Intent service = new Intent(this, typeof(CommunicationService));
+                StartForegroundService(service);
+            }
         }
         protected override void OnStart()
         {
