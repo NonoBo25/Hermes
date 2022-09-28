@@ -17,18 +17,22 @@ namespace Hermes
     [Activity(Label = "MainPageActivity", Enabled = true,Exported =true)]
     public class MainPageActivity : Activity
     {
-        LinearLayout layout;
-        DatabaseReference mRef;
-        FirebaseAuth mAuth;
+        private DatabaseReference mRef;
+        private FirebaseAuth mAuth;
+        private List<Message> mMessages;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Log.Info("Main", "MainActivity");
             SetContentView(Resource.Layout.activity_mainpage);
-            layout = FindViewById<LinearLayout>(Resource.Id.bg);
             mAuth = FirebaseAuth.Instance;
-            mRef = FirebaseDatabase.Instance.GetReference("/inboxes");
-            //mRef.AddValueEventListener(new InboxListener(this));
+            mRef = FirebaseDatabase.Instance.GetReference("/inboxes").Child(FirebaseAuth.Instance.CurrentUser.Uid);
+            mMessages = new List<Message>();
+            mRef.AddValueEventListener(new InboxListener(this));
+        }
+        protected override void OnStart()
+        {
+            base.OnStart();
             if (Intent.GetBooleanExtra("StartService", false))
             {
                 SharedPrefrenceManager.StartService();
@@ -36,12 +40,7 @@ namespace Hermes
                 StartForegroundService(service);
             }
         }
-        protected override void OnStart()
-        {
-            base.OnStart();
-            //Intent serviceToStart = new Intent(this, typeof(CommunicationService));
-            //StartService(serviceToStart);
-        }
+
         class InboxListener : Java.Lang.Object, IValueEventListener
         {
             private MainPageActivity obj;
@@ -57,7 +56,13 @@ namespace Hermes
 
             public void OnDataChange(DataSnapshot snapshot)
             {
-                throw new NotImplementedException();
+                foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
+                {
+                    i.Value.JavaCast<JavaDictionary>();
+                }
+
+                
+                
             }
         }
     }

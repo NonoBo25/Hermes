@@ -13,6 +13,7 @@ namespace Hermes
 {
     internal interface IFirebaseObject
     {
+
         public Java.Util.HashMap ToHashMap();
     }
 }

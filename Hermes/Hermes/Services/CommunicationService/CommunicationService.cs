@@ -83,7 +83,7 @@ namespace Hermes
         }
         private void InitDb()
         {
-            _database = FirebaseDatabase.Instance.GetReference("/test");//.Child(FirebaseAuth.Instance.CurrentUser.Uid);
+            _database = FirebaseDatabase.Instance.GetReference("/inboxes").Child(FirebaseAuth.Instance.CurrentUser.Uid);
             _database.AddValueEventListener(this);
         }
         public void Login()
