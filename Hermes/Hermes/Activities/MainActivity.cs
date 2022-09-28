@@ -13,8 +13,6 @@ using Firebase.Iid;
 
 namespace Hermes
 {
-
-
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true,Enabled =true,Exported =true, LaunchMode = LaunchMode.SingleTop)]
     public class MainActivity : AppCompatActivity,IOnCompleteListener
     {
@@ -35,6 +33,7 @@ namespace Hermes
                 else
                 {
                     i = new Intent(this, typeof(MainPageActivity));
+                    i.PutExtra("StartService", true);
                 }
             }
             else
@@ -59,6 +58,7 @@ namespace Hermes
             {
                 i=new Intent(this, typeof(MainPageActivity));
                 i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask | ActivityFlags.ClearTop);
+                i.PutExtra("StartService", true);
                 StartActivity(i);
                 Finish();
             }

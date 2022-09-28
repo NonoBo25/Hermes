@@ -11,16 +11,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-[assembly: UsesPermission(Manifest.Permission.ReceiveBootCompleted)]
 
 namespace Hermes
 {
 
-    [BroadcastReceiver(Name= "com.nonobo.hermes.BootBroadcastReceiver" ,Enabled = true, DirectBootAware = true, Permission = Manifest.Permission.ReceiveBootCompleted,Exported =true)]
-    [IntentFilter(new[] { Intent.ActionBootCompleted }, Priority = (int)IntentFilterPriority.HighPriority, Categories = new[] { Intent.CategoryDefault })]
+    [BroadcastReceiver(Name = "com.nonobo.hermes.BootBroadcastReceiver",Enabled =true,Exported =true)]
+    [IntentFilter(new[] {Intent.ActionBootCompleted})]
     public class BootBroadcastReceiver : BroadcastReceiver
     {
-        private AndroidNotificationManager notificationManager=new AndroidNotificationManager();
         public override void OnReceive(Context context, Intent intent)
         {
             Log.Info("Hermes", "Boot");

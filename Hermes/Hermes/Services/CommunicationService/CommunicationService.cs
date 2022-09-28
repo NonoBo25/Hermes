@@ -35,33 +35,9 @@ namespace Hermes
         {
             base.OnCreate();
             Log.Info(TAG, "Entered OnCreate");
-            Intent intent = new Intent(this.ApplicationContext, typeof(MainActivity));
-            intent.AddFlags(ActivityFlags.NewTask);
-            PendingIntent pendingIntent;
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
-            {
-                pendingIntent = PendingIntent.GetActivity(ApplicationContext,
-                        0, intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-
-            }
-            else
-            {
-                pendingIntent = PendingIntent.GetActivity(ApplicationContext,
-                                        0, intent, PendingIntentFlags.UpdateCurrent);
-
-            }
             notificationManager = new AndroidNotificationManager();
-            NotificationManager nm = (NotificationManager)GetSystemService(Context.NotificationService);
 
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationContext, "default")
-                .SetContentIntent(pendingIntent)
-                .SetContentTitle("Service")
-                .SetContentText("Started")
-                .SetLargeIcon(BitmapFactory.DecodeResource(ApplicationContext.Resources, Resource.Drawable.xamagonBlue))
-                .SetSmallIcon(Resource.Drawable.xamagonBlue)
-                .SetDefaults((int)NotificationDefaults.Sound | (int)NotificationDefaults.Vibrate);
-            StartForeground(1, builder.Build());
+            StartForeground(1,notificationManager.Create("Background Service Started","Started background service"));
             
             Log.Info(TAG, "created notification Manager");
             if (SharedPrefrenceManager.IsLoggedIn())

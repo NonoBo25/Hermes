@@ -78,7 +78,7 @@ namespace Hermes
             NotificationReceived?.Invoke(null, args);
         }
 
-        public void Show(string title, string message)
+        public Notification Create(string title, string message)
         {
             Intent intent = new Intent(AndroidApp.Context, typeof(MainActivity));
             intent.PutExtra(TitleKey, title);
@@ -106,8 +106,12 @@ namespace Hermes
                 .SetSmallIcon(Resource.Drawable.xamagonBlue)
                 .SetDefaults((int)NotificationDefaults.Sound | (int)NotificationDefaults.Vibrate);
 
-            Notification notification = builder.Build();
-            manager.Notify(messageId++, notification);
+            return builder.Build();
+        }
+        public void Show(string title, string message)
+        {
+
+            manager.Notify(messageId++, Create(title,message));
         }
 
         public void DeleteNotification(int id)

@@ -52,8 +52,20 @@ namespace Hermes
 
         public static bool CanStartService()
         {
-            ISharedPreferences mPref = Application.Context.GetSharedPreferences("Users", FileCreationMode.Private);
-            return mPref.GetBoolean("email", false); 
+            ISharedPreferences mPref = Application.Context.GetSharedPreferences("Logged", FileCreationMode.Private);
+            return mPref.GetBoolean("Logged", false); 
+        }
+        public static void FirstTime()
+        {
+            ISharedPreferencesEditor mEdit = Application.Context.GetSharedPreferences("FirstTime", FileCreationMode.Private).Edit();
+            mEdit.PutBoolean("FirstTime", false);
+            mEdit.Apply();
+        }
+
+        public static bool IsFirstTime()
+        {
+            ISharedPreferences mPref = Application.Context.GetSharedPreferences("FirstTime", FileCreationMode.Private);
+            return mPref.GetBoolean("FirstTime", true);
         }
 
     }

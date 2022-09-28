@@ -11,9 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 namespace Hermes
 {
+    
     [Activity(Label = "MainPageActivity", Enabled = true,Exported =true)]
     public class MainPageActivity : Activity
     {
