@@ -117,7 +117,7 @@ namespace Hermes
         public void DeleteNotification(int id)
         {
             Intent intent = new Intent(AndroidApp.Context, typeof(AlarmHandler));
-            PendingIntent pendingIntent = PendingIntent.GetBroadcast(AndroidApp.Context, id, intent, PendingIntentFlags.CancelCurrent);
+            PendingIntent pendingIntent = PendingIntent.GetBroadcast(AndroidApp.Context, id, intent, PendingIntentFlags.CancelCurrent| PendingIntentFlags.Immutable);
             AlarmManager alarmManager = AndroidApp.Context.GetSystemService(Context.AlarmService) as AlarmManager;
             alarmManager.Cancel(pendingIntent);
         }

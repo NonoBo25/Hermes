@@ -72,7 +72,7 @@ namespace Hermes
                 {
                     SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password.Text);
                     Intent i = new Intent(obj, typeof(MainPageActivity));
-                    i.PutExtra("StartService", true);
+                    i.PutExtra("StartForegroundService", true);
                     obj.StartActivity(i);
                 }
                 else

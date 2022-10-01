@@ -22,8 +22,9 @@ namespace Hermes
         public override void OnReceive(Context context, Intent intent)
         {
             Log.Info("Hermes", "Boot");
-            if (SharedPrefrenceManager.CanStartService())
+            if (SharedPrefrenceManager.CanStartForegroundService())
             {
+                SharedPrefrenceManager.StartForegroundService();
                 Log.Info("Hermes", "UserLogged");
                 Intent i = new Intent(context.ApplicationContext, typeof(CommunicationService));
                 context.ApplicationContext.StartForegroundService(i);

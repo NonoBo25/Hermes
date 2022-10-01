@@ -43,14 +43,14 @@ namespace Hermes
             string password = mPref.GetString("password", null);
             return new UserData { Email = email, Password = password };
         }
-        public static void StartService()
+        public static void StartForegroundService()
         {
             ISharedPreferencesEditor mEdit = Application.Context.GetSharedPreferences("Logged", FileCreationMode.Private).Edit();
             mEdit.PutBoolean("Logged", true);
             mEdit.Apply();
         }
 
-        public static bool CanStartService()
+        public static bool CanStartForegroundService()
         {
             ISharedPreferences mPref = Application.Context.GetSharedPreferences("Logged", FileCreationMode.Private);
             return mPref.GetBoolean("Logged", false); 

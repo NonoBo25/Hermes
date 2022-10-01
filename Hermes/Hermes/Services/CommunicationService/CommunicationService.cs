@@ -22,6 +22,8 @@ namespace Hermes
     {
         private AndroidNotificationManager notificationManager;
         static readonly string TAG = typeof(CommunicationService).FullName;
+        NotificationManager SysNotificationManager;
+
         private DatabaseReference _database;
         public IBinder Binder { get; private set; }
         public override IBinder OnBind(Intent intent)
@@ -30,15 +32,17 @@ namespace Hermes
             this.Binder = new CommunicationBinder(this);
             return this.Binder;
         }
-
+        
         public override void OnCreate()
         {
             base.OnCreate();
             Log.Info(TAG, "Entered OnCreate");
-            notificationManager = new AndroidNotificationManager();
-
-            StartForeground(1,notificationManager.Create("Background Service Started","Started background service"));
             
+
+            Notification n = ForegroundNotificationHelper.ReturnNotif();
+            StartForeground(1,n);
+            notificationManager = new AndroidNotificationManager();
+            SysNotificationManager = (NotificationManager)this.GetSystemService(NotificationService);
             Log.Info(TAG, "created notification Manager");
             if (SharedPrefrenceManager.IsLoggedIn())
             {
@@ -69,7 +73,8 @@ namespace Hermes
         public void OnDataChange(DataSnapshot snapshot)
         {
             Log.Info(TAG, "Datachange");
-            notificationManager.SendNotification("New Messages", "You Have New Messages");
+            Random r = new Random();
+            SysNotificationManager.Notify(r.Next(0, 1000), notificationManager.Create("New Messages", "You Have New Messages"));
         }
 
         public void OnComplete(Task task)

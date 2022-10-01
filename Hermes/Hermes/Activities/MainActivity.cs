@@ -8,6 +8,7 @@ using Android.Util;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.App;
+using Com.Judemanutd.Autostarter;
 using Firebase.Auth;
 using Firebase.Iid;
 
@@ -17,9 +18,17 @@ namespace Hermes
     public class MainActivity : AppCompatActivity,IOnCompleteListener
     {
         FirebaseAuth mAuth;
+       
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            App.init();
+            if (SharedPrefrenceManager.IsFirstTime())
+            {
+                SharedPrefrenceManager.FirstTime();
+            
+
+            }
             mAuth = FirebaseAuth.Instance;
             Intent i;
             if (SharedPrefrenceManager.IsLoggedIn())
@@ -33,7 +42,7 @@ namespace Hermes
                 else
                 {
                     i = new Intent(this, typeof(MainPageActivity));
-                    i.PutExtra("StartService", true);
+                    i.PutExtra("StartForegroundService", true);
                 }
             }
             else
@@ -58,7 +67,7 @@ namespace Hermes
             {
                 i=new Intent(this, typeof(MainPageActivity));
                 i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask | ActivityFlags.ClearTop);
-                i.PutExtra("StartService", true);
+                i.PutExtra("StartForegroundService", true);
                 StartActivity(i);
                 Finish();
             }

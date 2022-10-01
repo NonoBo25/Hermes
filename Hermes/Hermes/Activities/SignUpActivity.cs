@@ -22,12 +22,14 @@ namespace Hermes
         private EditText email,username,password1,password2;
         private FirebaseAuth mAuth;
         private DatabaseReference mReference;
+        private UserManager mUserManager;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             mAuth = FirebaseAuth.Instance;
             mReference = FirebaseDatabase.Instance.GetReference("/users");
+            
             SetContentView(Resource.Layout.activity_signup);
             signup = FindViewById<Button>(Resource.Id.signup_signup);
             email = FindViewById<EditText>(Resource.Id.signup_email);
@@ -69,10 +71,11 @@ namespace Hermes
             {
                 if (task.IsSuccessful)
                 {
+                    obj.mUserManager = new UserManager();
                     SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password1.Text);
-                    obj.mReference.Child(obj.mAuth.CurrentUser.Uid).SetValue(new User(obj.username.Text).ToHashMap());
+                    obj.mUserManager.RegisterUsername(obj.mAuth.CurrentUser.Uid, obj.username.Text);
                     Intent i = new Intent(obj, typeof(MainPageActivity));
-                    i.PutExtra("StartService", true);
+                    i.PutExtra("StartForegroundService", true);
                     obj.StartActivity(i);
                 }
                 else

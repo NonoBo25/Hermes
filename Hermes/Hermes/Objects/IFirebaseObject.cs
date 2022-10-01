@@ -15,5 +15,6 @@ namespace Hermes
     {
 
         public Java.Util.HashMap ToHashMap();
+        public void FromHashMap(Java.Util.HashMap map);
     }
 }

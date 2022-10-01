@@ -13,13 +13,14 @@ using System.Linq;
 using System.Text;
 namespace Hermes
 {
-    
+
+
     [Activity(Label = "MainPageActivity", Enabled = true,Exported =true)]
     public class MainPageActivity : Activity
     {
         private DatabaseReference mRef;
         private FirebaseAuth mAuth;
-        private List<Message> mMessages;
+        private ListView mListView;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -27,15 +28,15 @@ namespace Hermes
             SetContentView(Resource.Layout.activity_mainpage);
             mAuth = FirebaseAuth.Instance;
             mRef = FirebaseDatabase.Instance.GetReference("/inboxes").Child(FirebaseAuth.Instance.CurrentUser.Uid);
-            mMessages = new List<Message>();
             mRef.AddValueEventListener(new InboxListener(this));
+            mListView = FindViewById<ListView>(Resource.Id.Chats);
         }
         protected override void OnStart()
         {
             base.OnStart();
-            if (Intent.GetBooleanExtra("StartService", false))
+            if (Intent.GetBooleanExtra("StartForegroundService", false))
             {
-                SharedPrefrenceManager.StartService();
+                SharedPrefrenceManager.StartForegroundService();
                 Intent service = new Intent(this, typeof(CommunicationService));
                 StartForegroundService(service);
             }
@@ -58,11 +59,12 @@ namespace Hermes
             {
                 foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
                 {
-                    i.Value.JavaCast<JavaDictionary>();
+                    Java.Util.HashMap d = i.Value.JavaCast<Java.Util.HashMap>();
+                    Message m = new Message();
+                    m.FromHashMap(d);
+                    App.ChatsManager.AddMessage(m);
                 }
-
-                
-                
+                obj.mListView.Adapter = new ChatAdapter(obj, App.ChatsManager.GetListOfChats());
             }
         }
     }

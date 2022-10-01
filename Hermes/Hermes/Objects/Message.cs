@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Java.Interop;
 using Java.Util;
 using System;
 using System.Collections.Generic;
@@ -12,24 +13,28 @@ using System.Text;
 
 namespace Hermes
 {
-    internal class Message : IFirebaseObject
+    public class Message : IFirebaseObject
     {
-        private string _message;
-        private string _sender;
-        private string _recipient;
-        public Message(string message, string sender, string recipient)
+        
+        public string Content { get; set; }
+        public string Sender { get; set; }
+        public string Recipient { get; set; }
+
+        public void FromHashMap(HashMap map)
         {
-            _message = message;
-            _sender = sender;
-            _recipient = recipient;
+            Content = map.Get("content").ToString();
+            Sender = map.Get("sender").ToString();
+            Recipient = map.Get("recipient").ToString();
         }
+
         public HashMap ToHashMap()
         {
             HashMap res = new HashMap();
-            res.Put("message", _message);
-            res.Put("sender", _sender);
-            res.Put("recipient", _recipient);
+            res.Put("content", Content);
+            res.Put("sender", Sender);
+            res.Put("recipient", Recipient);
             return res;
         }
+
     }
 }
