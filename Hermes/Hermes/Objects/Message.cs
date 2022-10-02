@@ -15,11 +15,19 @@ namespace Hermes
 {
     public class Message : IFirebaseObject
     {
-        
+        public Message() { }
+
+        public Message(string content, string sender, string recipient)
+        {
+            Content = content;
+            Sender = sender;
+            Recipient = recipient;
+        }
+
         public string Content { get; set; }
         public string Sender { get; set; }
         public string Recipient { get; set; }
-
+        
         public void FromHashMap(HashMap map)
         {
             Content = map.Get("content").ToString();

@@ -49,7 +49,6 @@ namespace Hermes
                 Login();
             }
             
-            Log.Info(TAG, "complete");
         }
         public override bool OnUnbind(Intent intent)
         {
@@ -95,17 +94,16 @@ namespace Hermes
         {
             if (FirebaseAuth.Instance.CurrentUser == null)
             {
-                Log.Info(TAG, "User not logged");
                 UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
-                FirebaseAuth.Instance.SignInWithEmailAndPassword(loggedUser.Email, loggedUser.Password).AddOnCompleteListener(this);
-                Log.Info(TAG, "User created login");
+                if (!App.AuthManager.SignIn(loggedUser))
+                {
+                    Toast.MakeText(this, "Error SignIn", ToastLength.Long).Show();
+                    StopForeground(true);
+                    StopSelf();
+                    return;
+                }
             }
-            else
-            {
-                Log.Info(TAG, "User loggedin" + " " + FirebaseAuth.Instance.CurrentUser.Email);
-                InitDb();
-                Log.Info(TAG, "database connceted");
-            }
+            InitDb();
         }
 
     }

@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Firebase.Auth;
 using Firebase.Database;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,7 @@ namespace Hermes
                 {
                     row = LayoutInflater.From(sContext).Inflate(Resource.Layout.cell_chat, null, false);
                 }
+                
                 TextView name = row.FindViewById<TextView>(Resource.Id.chat_name);
                 TextView content = row.FindViewById<TextView>(Resource.Id.chat_content);
                 name.Text = App.UserManager.UsernameById[this[position].Partner];

@@ -16,14 +16,14 @@ namespace Hermes
 {
     public class ChatsManager: Java.Lang.Object, IValueEventListener, INotifyPropertyChanged
     {
-        private DatabaseReference mRef;
+        private DatabaseReference mMessagesRef;
         private Dictionary<string, Chat> _chats;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void Start()
         {
-            mRef = FirebaseDatabase.Instance.GetReference("/inboxes").Child(FirebaseAuth.Instance.CurrentUser.Uid);
-            mRef.AddValueEventListener(this);
+            mMessagesRef = FirebaseDatabase.Instance.GetReference("/messages");
+            mMessagesRef.Child(FirebaseAuth.Instance.CurrentUser.Uid).AddValueEventListener(this);
         }
         public ChatsManager()
         {
@@ -46,13 +46,18 @@ namespace Hermes
         
         public void AddMessage(Message m)
         {
-            if (_chats.Keys.Contains(m.Sender))
+            string key=m.Sender;
+            if (m.Sender.Equals(FirebaseAuth.Instance.CurrentUser.Uid))
             {
-                _chats[m.Sender].Messages.Add(m);
+                key = m.Recipient;
+            }
+            if (_chats.Keys.Contains(key))
+            {
+                _chats[key].Messages.Add(m);
             }
             else
             {
-                _chats[m.Sender]=new Chat(m.Sender,new List<Message> { m });
+                _chats[key]=new Chat(m.Sender,new List<Message> { m });
             }
             OnPropertyChanged(nameof(ChatList));
         }
@@ -69,12 +74,17 @@ namespace Hermes
                 Java.Util.HashMap d = i.Value.JavaCast<Java.Util.HashMap>();
                 Message m = new Message();
                 m.FromHashMap(d);
-                App.ChatsManager.AddMessage(m);
+                AddMessage(m);
             }
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public void SendMessage(Message m) {
+            long tStamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            mMessagesRef.Child(m.Recipient).Child(tStamp.ToString()).SetValue(m.ToHashMap());
+            mMessagesRef.Child(m.Sender).Child(tStamp.ToString()).SetValue(m.ToHashMap());
         }
     }
 }

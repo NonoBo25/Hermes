@@ -29,7 +29,16 @@ namespace Hermes
             SetContentView(Resource.Layout.activity_mainpage);
             mListView = FindViewById<ListView>(Resource.Id.Chats);
             mListView.Adapter = new ChatAdapter(this);
+            mListView.ItemClick += MListView_ItemClick;
         }
+
+        private void MListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            Message m = new Message { Content = "Hi", Sender = FirebaseAuth.Instance.CurrentUser.Uid, Recipient = App.UserManager.IdByUsername[this[position].Partner] };
+             App.ChatsManager.SendMessage(m);
+          
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
