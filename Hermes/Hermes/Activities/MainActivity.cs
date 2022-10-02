@@ -15,14 +15,13 @@ using Firebase.Iid;
 namespace Hermes
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true,Enabled =true,Exported =true, LaunchMode = LaunchMode.SingleTop)]
-    public class MainActivity : AppCompatActivity,IOnCompleteListener
+    public class MainActivity : AppCompatActivity
     {
         FirebaseAuth mAuth;
        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            App.init();
             if (SharedPrefrenceManager.IsFirstTime())
             {
                 SharedPrefrenceManager.FirstTime();
@@ -30,19 +29,18 @@ namespace Hermes
 
             }
             mAuth = FirebaseAuth.Instance;
-            Intent i;
+            Intent i = new Intent(this, typeof(MainPageActivity));
+            i.PutExtra("StartForegroundService", true);
             if (SharedPrefrenceManager.IsLoggedIn())
             {
                 if (mAuth.CurrentUser == null)
                 {
                     UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
-                    mAuth.SignInWithEmailAndPassword(loggedUser.Email, loggedUser.Password).AddOnCompleteListener(this);
-                    return;
-                }
-                else
-                {
-                    i = new Intent(this, typeof(MainPageActivity));
-                    i.PutExtra("StartForegroundService", true);
+                    if (!App.AuthManager.SignIn(loggedUser))
+                    {
+                        Toast.MakeText(this, "Could Not Log In!", ToastLength.Long).Show();
+                        i = new Intent(this, typeof(AuthMenuActivity));
+                    }                  
                 }
             }
             else
@@ -60,26 +58,6 @@ namespace Hermes
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        public void OnComplete(Task task)
-        {
-            Intent i;
-            if (task.IsSuccessful)
-            {
-                i=new Intent(this, typeof(MainPageActivity));
-                i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask | ActivityFlags.ClearTop);
-                i.PutExtra("StartForegroundService", true);
-                StartActivity(i);
-                Finish();
-            }
-            else
-            {
-                Toast.MakeText(this, "Could Not Log In!", ToastLength.Long).Show();
-                i = new Intent(this, typeof(AuthMenuActivity));
-                i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask | ActivityFlags.ClearTop);
-                StartActivity(i);
-                Finish();
-            }
-        }
 
     }
 }

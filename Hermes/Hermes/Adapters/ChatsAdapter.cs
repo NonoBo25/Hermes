@@ -7,6 +7,7 @@ using Android.Widget;
 using Firebase.Database;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -14,29 +15,24 @@ namespace Hermes
 {
     public class ChatAdapter : BaseAdapter<Chat>
     {
-        public List<Chat> sList;
         private Context sContext;
-        private DatabaseReference mRef;
-        public ChatAdapter(Context context, List<Chat> list)
+        public ChatAdapter(Context context)
         {
-           
-
-            sList = list;
             sContext = context;
-            mRef = FirebaseDatabase.Instance.GetReference("/users");
+            App.ChatsManager.PropertyChanged += OnNewMessages;
         }
         public override Chat this[int position]
         {
             get
             {
-                return sList[position];
+                return App.ChatsManager.ChatList[position];
             }
         }
         public override int Count
         {
             get
             {
-                return sList.Count;
+                return App.ChatsManager.ChatList.Count;
             }
         }
         public override long GetItemId(int position)
@@ -63,6 +59,14 @@ namespace Hermes
             }
             finally { }
             return row;
+        }
+
+        public void OnNewMessages(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(App.ChatsManager.ChatList))
+            {
+                NotifyDataSetChanged();
+            }
         }
     }
 }

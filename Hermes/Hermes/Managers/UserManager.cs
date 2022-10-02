@@ -50,5 +50,6 @@ namespace Hermes
         {
             mRef.Child(uid).SetValue(new Java.Lang.String(username));
         }
+
     }
 }

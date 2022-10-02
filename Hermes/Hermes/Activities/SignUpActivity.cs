@@ -22,8 +22,6 @@ namespace Hermes
         private EditText email,username,password1,password2;
         private FirebaseAuth mAuth;
         private DatabaseReference mReference;
-        private UserManager mUserManager;
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -38,50 +36,30 @@ namespace Hermes
             password2 = FindViewById<EditText>(Resource.Id.signup_password2);
             signup.Click += Signup_Click;
         }
-
+        private bool ArePasswordsEqual()
+        {
+            return password1.Text.Equals(password2.Text);
+        }
         private void Signup_Click(object sender, EventArgs e)
         {
-            if ( !TextHelper.IsValidString(password1.Text)||!TextHelper.IsValidString(password2.Text)||!password1.Text.Equals(password2.Text))
+            if (ArePasswordsEqual())
             {
-                Toast.MakeText(this, "Passwords Do Not Match!", ToastLength.Long).Show();
-                return;
-            }
-            if (!TextHelper.IsValidString(email.Text)||!TextHelper.IsValidEmail(email.Text))
-            {
-                Toast.MakeText(this, "Invalid Email Adress!", ToastLength.Long).Show();
-                return;
-            }
-            if (!TextHelper.IsValidString(username.Text))
-            {
-                Toast.MakeText(this, "Invalid Username!", ToastLength.Long).Show();
-                return;
-            }
-            mAuth.CreateUserWithEmailAndPassword(email.Text, password1.Text).AddOnCompleteListener(new SignUpListener(this));
-
-        }
-        class SignUpListener : Java.Lang.Object, IOnCompleteListener
-        {
-            private SignUpActivity obj;
-            public SignUpListener(SignUpActivity obj)
-            {
-                this.obj = obj;
-            }
-
-            public void OnComplete(Task task)
-            {
-                if (task.IsSuccessful)
+                UserData tempUser = new UserData { Email = email.Text, Password = password1.Text ,Username=username.Text};
+                AuthHelper.UserVerificationResult res = AuthHelper.VerifyUserData(tempUser);
+                if (res)
                 {
-                    obj.mUserManager = new UserManager();
-                    SharedPrefrenceManager.SaveUser(obj.email.Text, obj.password1.Text);
-                    obj.mUserManager.RegisterUsername(obj.mAuth.CurrentUser.Uid, obj.username.Text);
-                    Intent i = new Intent(obj, typeof(MainPageActivity));
-                    i.PutExtra("StartForegroundService", true);
-                    obj.StartActivity(i);
-                }
-                else
-                {
-                    Toast.MakeText(obj, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
-                    return;
+                    if (App.AuthManager.SignUp(tempUser))
+                    {
+                        SharedPrefrenceManager.SaveUser(tempUser);
+                        Intent i = new Intent(this, typeof(MainPageActivity));
+                        i.PutExtra("StartForegroundService", true);
+                        StartActivity(i);
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "Error Signing Up!\nTry Again!", ToastLength.Long).Show();
+                        return;
+                    }
                 }
             }
         }

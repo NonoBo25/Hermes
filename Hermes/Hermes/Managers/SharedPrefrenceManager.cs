@@ -13,11 +13,11 @@ namespace Hermes
 {
     static class SharedPrefrenceManager
     {
-        public static void SaveUser(string email,string password)
+        public static void SaveUser(UserData u)
         {
             ISharedPreferencesEditor mEdit= Application.Context.GetSharedPreferences("Users", FileCreationMode.Private).Edit();
-            mEdit.PutString("email", email);
-            mEdit.PutString("password", password);
+            mEdit.PutString("email", u.Email);
+            mEdit.PutString("password", u.Password);
             mEdit.Apply();
         }
 
@@ -41,7 +41,7 @@ namespace Hermes
             ISharedPreferences mPref = Application.Context.GetSharedPreferences("Users", FileCreationMode.Private);
             string email = mPref.GetString("email", null);
             string password = mPref.GetString("password", null);
-            return new UserData { Email = email, Password = password };
+            return new UserData { Email = email, Password = password};
         }
         public static void StartForegroundService()
         {

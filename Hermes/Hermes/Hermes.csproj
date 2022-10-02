@@ -75,8 +75,10 @@
     <Compile Include="AlarmHandler.cs" />
     <Compile Include="App.cs" />
     <Compile Include="Chat.cs" />
+    <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Managers\AndroidNotificationManager.cs" />
     <Compile Include="BootBroadcastReceiver.cs" />
+    <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\ChatsManager.cs" />
     <Compile Include="Managers\UserManager.cs" />
     <Compile Include="Objects\IFirebaseObject.cs" />
