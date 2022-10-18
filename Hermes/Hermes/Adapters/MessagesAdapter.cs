@@ -14,48 +14,54 @@ using System.Text;
 
 namespace Hermes
 {
-    public class ChatAdapter : BaseAdapter<Chat>
+    public class MessagesAdapter : BaseAdapter<Message>
     {
         private Context sContext;
-        public ChatAdapter(Context context)
+        private int chatId;
+        public MessagesAdapter(Context context,int chatId)
         {
             sContext = context;
+            this.chatId = chatId;
+            
         }
-        public override Chat this[int position]
+        public override Message this[int position]
         {
             get
             {
-                return App.ChatsManager.ChatList[position];
+                return App.ChatsManager.ChatList[chatId].Messages[position];
             }
         }
         public override int Count
         {
             get
             {
-                return App.ChatsManager.ChatList.Count;
+                return App.ChatsManager.ChatList[chatId].Messages.Count;
             }
         }
         public override long GetItemId(int position)
         {
             return position;
         }
-        
+
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             View row = convertView;
+            int res = Resource.Layout.cell_incoming_bubble;
+            int mRes = Resource.Id.msg_incoming;
+            if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+            {
+                res = Resource.Layout.cell_outgoing_bubble;
+                mRes = Resource.Id.msg_outgoing;
+            }
             try
             {
                 if (row == null)
                 {
-                    row = LayoutInflater.From(sContext).Inflate(Resource.Layout.cell_chat, null, false);
+                    row = LayoutInflater.From(sContext).Inflate(res, null, false);
                 }
-                
-                TextView name = row.FindViewById<TextView>(Resource.Id.chat_name);
-                TextView content = row.FindViewById<TextView>(Resource.Id.chat_content);
-                TextView time = row.FindViewById<TextView>(Resource.Id.chat_time);
-                name.Text = App.UserManager.UsernameById[this[position].Partner];
-                content.Text = this[position].Messages.Last().Content;
-                time.Text = TextHelper.UnixToTime(this[position].Messages.Last().Timestamp);
+
+                TextView message = row.FindViewById<TextView>(mRes);
+                message.Text = this[position].Content;
             }
             catch (Exception ex)
             {
@@ -65,6 +71,6 @@ namespace Hermes
             return row;
         }
 
-        
+
     }
 }

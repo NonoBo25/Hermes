@@ -78,16 +78,14 @@ namespace Hermes
 
         public void OnComplete(Task task)
         {
-            Log.Info(TAG, "Login Complete");
             if (task.IsSuccessful)
             {
-                Log.Info(TAG, "Login Success " + FirebaseAuth.Instance.CurrentUser.Email);
                 InitDb();
             }
         }
         private void InitDb()
         {
-            _database = FirebaseDatabase.Instance.GetReference("/inboxes").Child(FirebaseAuth.Instance.CurrentUser.Uid);
+            _database = FirebaseDatabase.Instance.GetReference("/inboxes").Child(App.AuthManager.CurrentUserUid);
             _database.AddValueEventListener(this);
         }
         public void Login()

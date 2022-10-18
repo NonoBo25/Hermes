@@ -17,16 +17,19 @@ namespace Hermes
     {
         public Message() { }
 
-        public Message(string content, string sender, string recipient)
+        public Message(string content, string sender, string recipient, string timestamp)
         {
             Content = content;
             Sender = sender;
             Recipient = recipient;
+            Timestamp = timestamp;
         }
 
         public string Content { get; set; }
         public string Sender { get; set; }
         public string Recipient { get; set; }
+        
+        public string Timestamp { get; set; }
         
         public void FromHashMap(HashMap map)
         {

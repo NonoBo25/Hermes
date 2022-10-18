@@ -49,7 +49,7 @@ namespace Hermes
                 thr.Join();
                 if (signup.IsSuccessful)
                 {
-                    App.UserManager.RegisterUsername(mAuth.CurrentUser.Uid, u.Username);
+                    App.UserManager.RegisterUsername(CurrentUserUid, u.Username);
                 }
                 return signup.IsSuccessful;
             }
@@ -58,6 +58,8 @@ namespace Hermes
                 return false;
             }
         }
+        
+        public string CurrentUserUid { get => mAuth.CurrentUser.Uid; }
     }
 
 }

@@ -1,0 +1,52 @@
+﻿using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Hermes
+{
+    [Activity(Label = "ChatActivity")]
+    public class ChatActivity : Activity
+    {
+        private int chatId;
+        private ListView mMessages;
+        private TextView mUser;
+        private EditText mMessage;
+        private Button mSend;
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+            SetContentView(Resource.Layout.activity_chat);
+            App.ChatsManager.PropertyChanged += ChatsManager_PropertyChanged;
+            chatId = Intent.GetIntExtra("chatId", -1);
+            mMessages = FindViewById<ListView>(Resource.Id.messages);
+            mMessages.Adapter = new MessagesAdapter(this, chatId);
+            mUser = FindViewById<TextView>(Resource.Id.chat_username);
+            mUser.Text = App.UserManager.UsernameById[App.ChatsManager.ChatList[chatId].Partner];
+            mMessage = FindViewById<EditText>(Resource.Id.message_input);
+            mSend = FindViewById<Button>(Resource.Id.message_send);
+            mSend.Click += MSend_Click;
+        }
+
+        private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            mMessages.Adapter = null;
+            mMessages.Adapter=new MessagesAdapter(this, chatId);
+        }
+
+        private void MSend_Click(object sender, EventArgs e)
+        {
+            Message m = new Message();
+            m.Sender = App.AuthManager.CurrentUserUid;
+            m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
+            m.Content = mMessage.Text;
+            App.ChatsManager.SendMessage(m);
+        }
+    }
+}

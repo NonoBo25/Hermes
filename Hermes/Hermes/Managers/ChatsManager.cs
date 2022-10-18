@@ -23,7 +23,7 @@ namespace Hermes
         public void Start()
         {
             mMessagesRef = FirebaseDatabase.Instance.GetReference("/messages");
-            mMessagesRef.Child(FirebaseAuth.Instance.CurrentUser.Uid).AddValueEventListener(this);
+            mMessagesRef.Child(App.AuthManager.CurrentUserUid).AddValueEventListener(this);
         }
         public ChatsManager()
         {
@@ -47,7 +47,7 @@ namespace Hermes
         public void AddMessage(Message m)
         {
             string key=m.Sender;
-            if (m.Sender.Equals(FirebaseAuth.Instance.CurrentUser.Uid))
+            if (m.Sender.Equals(App.AuthManager.CurrentUserUid))
             {
                 key = m.Recipient;
             }
@@ -57,9 +57,8 @@ namespace Hermes
             }
             else
             {
-                _chats[key]=new Chat(m.Sender,new List<Message> { m });
+                _chats[key]=new Chat(key,new List<Message> { m });
             }
-            OnPropertyChanged(nameof(ChatList));
         }
 
         public void OnCancelled(DatabaseError error)
@@ -69,13 +68,17 @@ namespace Hermes
 
         public void OnDataChange(DataSnapshot snapshot)
         {
+            _chats.Clear();
             foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
             {
                 Java.Util.HashMap d = i.Value.JavaCast<Java.Util.HashMap>();
                 Message m = new Message();
                 m.FromHashMap(d);
+                m.Timestamp = i.Key.ToString();
                 AddMessage(m);
             }
+            OnPropertyChanged(nameof(ChatList));
+
         }
         protected virtual void OnPropertyChanged(string propertyName)
         {
