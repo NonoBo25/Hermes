@@ -13,6 +13,7 @@ namespace Hermes
 {
     public static class App
     {
+        public static TimeManager TimeManager=new TimeManager();
         public static AuthManager AuthManager = new AuthManager();
         public static UserManager UserManager = new UserManager();
         public static ChatsManager ChatsManager = new ChatsManager();

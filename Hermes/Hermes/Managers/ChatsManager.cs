@@ -85,9 +85,9 @@ namespace Hermes
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public void SendMessage(Message m) {
-            long tStamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-            mMessagesRef.Child(m.Recipient).Child(tStamp.ToString()).SetValue(m.ToHashMap());
-            mMessagesRef.Child(m.Sender).Child(tStamp.ToString()).SetValue(m.ToHashMap());
+            string tStamp = App.TimeManager.Timestamp;
+            mMessagesRef.Child(m.Recipient).Child(tStamp).SetValue(m.ToHashMap());
+            mMessagesRef.Child(m.Sender).Child(tStamp).SetValue(m.ToHashMap());
         }
     }
 }

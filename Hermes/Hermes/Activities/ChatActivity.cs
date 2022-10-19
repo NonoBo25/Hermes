@@ -46,6 +46,7 @@ namespace Hermes
             m.Sender = App.AuthManager.CurrentUserUid;
             m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
             m.Content = mMessage.Text;
+            m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             App.ChatsManager.SendMessage(m);
         }
     }

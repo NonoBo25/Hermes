@@ -82,6 +82,7 @@
     <Compile Include="BootBroadcastReceiver.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\ChatsManager.cs" />
+    <Compile Include="Managers\TimeManager.cs" />
     <Compile Include="Managers\UserManager.cs" />
     <Compile Include="Objects\IFirebaseObject.cs" />
     <Compile Include="Objects\Message.cs" />
