@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Hermes
 {
@@ -53,6 +54,7 @@ namespace Hermes
         public void RegisterUsername(string uid,string username)
         {
             mRef.Child(uid).SetValue(new Java.Lang.String(username));
+
         }
 
     }

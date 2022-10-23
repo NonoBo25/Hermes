@@ -85,7 +85,7 @@ namespace Hermes
         }
         private void InitDb()
         {
-            _database = FirebaseDatabase.Instance.GetReference("/inboxes").Child(App.AuthManager.CurrentUserUid);
+            _database = FirebaseDatabase.Instance.GetReference("/messages").Child(App.AuthManager.CurrentUserUid);
             _database.AddValueEventListener(this);
         }
         public void Login()

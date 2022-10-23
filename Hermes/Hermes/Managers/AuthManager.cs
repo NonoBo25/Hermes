@@ -49,7 +49,11 @@ namespace Hermes
                 thr.Join();
                 if (signup.IsSuccessful)
                 {
-                    App.UserManager.RegisterUsername(CurrentUserUid, u.Username);
+                    if (SignIn(u))
+                    {
+                        App.UserManager.RegisterUsername(CurrentUserUid, u.Username);
+
+                    }
                 }
                 return signup.IsSuccessful;
             }
