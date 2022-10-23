@@ -23,7 +23,7 @@ namespace Hermes
         public void Start()
         {
             mMessagesRef = FirebaseDatabase.Instance.GetReference("/messages");
-            mMessagesRef.Child(App.AuthManager.CurrentUserUid).AddValueEventListener(this);
+            mMessagesRef.Child(App.AuthManager.CurrentUserUid).OrderByChild("timestamp").AddValueEventListener(this);
         }
         public ChatsManager()
         {
@@ -69,6 +69,7 @@ namespace Hermes
         public void OnDataChange(DataSnapshot snapshot)
         {
             _chats.Clear();
+
             foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
             {
                 Java.Util.HashMap d = i.Value.JavaCast<Java.Util.HashMap>();
@@ -84,10 +85,14 @@ namespace Hermes
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public void SendMessage(Message m) {
-            string tStamp = App.TimeManager.Timestamp;
-            mMessagesRef.Child(m.Recipient).Child(tStamp).SetValue(m.ToHashMap());
-            mMessagesRef.Child(m.Sender).Child(tStamp).SetValue(m.ToHashMap());
+        public void SendMessage(Message m) {   
+            string tStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+            Java.Util.HashMap mess = m.ToHashMap();
+            DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
+            dbRef.SetValue(mess);
+            mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
+
         }
+
     }
 }

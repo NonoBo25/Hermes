@@ -17,13 +17,7 @@ namespace Hermes
     {
         public Message() { }
 
-        public Message(string content, string sender, string recipient, string timestamp)
-        {
-            Content = content;
-            Sender = sender;
-            Recipient = recipient;
-            Timestamp = timestamp;
-        }
+
 
         public string Content { get; set; }
         public string Sender { get; set; }
@@ -36,6 +30,7 @@ namespace Hermes
             Content = map.Get("content").ToString();
             Sender = map.Get("sender").ToString();
             Recipient = map.Get("recipient").ToString();
+            Timestamp = map.Get("timestamp").ToString();
         }
 
         public HashMap ToHashMap()
@@ -44,6 +39,7 @@ namespace Hermes
             res.Put("content", Content);
             res.Put("sender", Sender);
             res.Put("recipient", Recipient);
+            res.Put("timestamp", (Java.Lang.Object)Firebase.Database.ServerValue.Timestamp);
             return res;
         }
 

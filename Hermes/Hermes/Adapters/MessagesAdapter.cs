@@ -22,7 +22,6 @@ namespace Hermes
         {
             sContext = context;
             this.chatId = chatId;
-            
         }
         public override Message this[int position]
         {
