@@ -86,12 +86,10 @@ namespace Hermes
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public void SendMessage(Message m) {   
-            string tStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
             Java.Util.HashMap mess = m.ToHashMap();
             DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
             dbRef.SetValue(mess);
             mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
-
         }
 
     }
