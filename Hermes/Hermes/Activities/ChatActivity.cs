@@ -34,6 +34,7 @@ namespace Hermes
 
             mSend = FindViewById<Button>(Resource.Id.message_send);
             mSend.Click += MSend_Click;
+
         }
 
 

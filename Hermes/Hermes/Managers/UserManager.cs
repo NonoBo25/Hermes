@@ -45,6 +45,10 @@ namespace Hermes
                 idByUsername[i.Value.ToString()] = i.Key.ToString();
             }
         }
+        public bool Exists(string uname)
+        {
+            return IdByUsername.ContainsKey(uname);
+        }
 
         public void RegisterUsername(string uid,string username)
         {

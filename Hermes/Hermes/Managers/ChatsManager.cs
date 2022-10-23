@@ -37,6 +37,15 @@ namespace Hermes
                 AddMessage(i);
             }
         }
+        public int ChatExists(string c)
+        {
+            if (_chats.Keys.Contains(c))
+            {
+                return _chats.Keys.ToList().IndexOf(c);
+            }
+            return -1;
+        }
+
         public List<Chat> ChatList { get => _chats.Values.ToList(); }
 
         public List<Chat> GetListOfChats()
@@ -65,7 +74,10 @@ namespace Hermes
         {
             throw new NotImplementedException();
         }
-
+        public void NewChat(string partner) 
+        {
+            _chats[partner] = new Chat(partner, new List<Message>());
+        }
         public void OnDataChange(DataSnapshot snapshot)
         {
             _chats.Clear();
