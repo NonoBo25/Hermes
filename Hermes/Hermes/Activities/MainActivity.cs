@@ -22,6 +22,7 @@ namespace Hermes
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            App.init();
             if (SharedPrefrenceManager.IsFirstTime())
             {
                 SharedPrefrenceManager.FirstTime();

@@ -33,7 +33,7 @@ namespace Hermes
                 thr.Join();
                 return signin.IsSuccessful;
             }
-            catch(Exception ex)
+            catch
             {
                 return false;
             }

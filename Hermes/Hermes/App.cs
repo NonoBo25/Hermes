@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -13,11 +14,23 @@ namespace Hermes
 {
     public static class App
     {
-        public static TimeManager TimeManager=new TimeManager();
-        public static AuthManager AuthManager = new AuthManager();
-        public static UserManager UserManager = new UserManager();
-        public static ChatsManager ChatsManager = new ChatsManager();
+        public static TimeManager TimeManager;
+        public static AuthManager AuthManager;
+        public static UserManager UserManager;
+        public static ChatsManager ChatsManager;
+        private static bool initialized = false;
+        public static void init()
+        {
+            if (!initialized)
+            {
+                Log.Debug("HERMES-APP", "INIT");
+                TimeManager = new TimeManager();
+                AuthManager = new AuthManager();
+                UserManager = new UserManager();
+                ChatsManager = new ChatsManager();
+                initialized= true;
+            }
 
-
+        }
     }
 }

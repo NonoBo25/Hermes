@@ -18,13 +18,12 @@ using System.Text;
 namespace Hermes
 {
     [Service(Name ="com.nonobo.hermes.CommunicationService",Enabled =true,Exported =true)]
-    public class CommunicationService : Service, IValueEventListener,IOnCompleteListener
+    public class CommunicationService : Service,IOnCompleteListener
     {
         private AndroidNotificationManager notificationManager;
         static readonly string TAG = typeof(CommunicationService).FullName;
         NotificationManager SysNotificationManager;
-
-        private DatabaseReference _database;
+        
         public IBinder Binder { get; private set; }
         public override IBinder OnBind(Intent intent)
         {
@@ -37,8 +36,6 @@ namespace Hermes
         {
             base.OnCreate();
             Log.Info(TAG, "Entered OnCreate");
-            
-
             Notification n = ForegroundNotificationHelper.ReturnNotif();
             StartForeground(1,n);
             notificationManager = new AndroidNotificationManager();
@@ -46,10 +43,26 @@ namespace Hermes
             Log.Info(TAG, "created notification Manager");
             if (SharedPrefrenceManager.IsLoggedIn())
             {
-                Login();
+                if (App.AuthManager.SignIn(SharedPrefrenceManager.GetLoggedUser()))
+                {
+                    App.ChatsManager.Start();
+                }
             }
+            App.ChatsManager.PropertyChanged += ChatsManager_PropertyChanged;
             
         }
+
+        private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Log.Debug(TAG, "New Message");
+            if (e.PropertyName == "In")
+            {
+                Log.Debug(TAG, "New Incoming Message");
+                Random r = new Random();
+                SysNotificationManager.Notify(r.Next(0, 1000), notificationManager.Create("New Messages", "You Have New Messages"));
+            }
+        }
+
         public override bool OnUnbind(Intent intent)
         {
             Log.Debug(TAG, "OnUnbind");
@@ -62,47 +75,19 @@ namespace Hermes
             StartForegroundService(i);
         }
 
-        public void OnCancelled(DatabaseError error)
-        {
-            Log.Info(TAG, "cancelled");
-            Intent i = new Intent(this, typeof(CommunicationService));
-            StartForegroundService(i);
-        }
 
-        public void OnDataChange(DataSnapshot snapshot)
-        {
-            Log.Info(TAG, "Datachange");
-            Random r = new Random();
-            SysNotificationManager.Notify(r.Next(0, 1000), notificationManager.Create("New Messages", "You Have New Messages"));
-        }
 
         public void OnComplete(Task task)
         {
             if (task.IsSuccessful)
             {
-                InitDb();
-            }
-        }
-        private void InitDb()
-        {
-            _database = FirebaseDatabase.Instance.GetReference("/messages").Child(App.AuthManager.CurrentUserUid);
-            _database.AddValueEventListener(this);
-        }
-        public void Login()
-        {
-            if (FirebaseAuth.Instance.CurrentUser == null)
-            {
-                UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
-                if (!App.AuthManager.SignIn(loggedUser))
+                if (App.ChatsManager == null)
                 {
-                    Toast.MakeText(this, "Error SignIn", ToastLength.Long).Show();
-                    StopForeground(true);
-                    StopSelf();
-                    return;
+                    App.ChatsManager = new ChatsManager();
                 }
             }
-            InitDb();
         }
+
 
     }
 }

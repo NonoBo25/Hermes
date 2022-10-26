@@ -24,8 +24,8 @@ namespace Hermes
             Log.Info("Hermes", "Boot");
             if (SharedPrefrenceManager.CanStartForegroundService())
             {
+                App.init();
                 SharedPrefrenceManager.StartForegroundService();
-                Log.Info("Hermes", "UserLogged");
                 Intent i = new Intent(context.ApplicationContext, typeof(CommunicationService));
                 context.ApplicationContext.StartForegroundService(i);
             }

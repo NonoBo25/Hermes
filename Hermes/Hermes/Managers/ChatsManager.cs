@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
@@ -14,19 +15,27 @@ using System.Text;
 
 namespace Hermes
 {
-    public class ChatsManager: Java.Lang.Object, IValueEventListener, INotifyPropertyChanged
+    public class ChatsManager: Java.Lang.Object, IChildEventListener, INotifyPropertyChanged
     {
         private DatabaseReference mMessagesRef;
         private Dictionary<string, Chat> _chats;
+        private bool started = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void Start()
         {
-            mMessagesRef = FirebaseDatabase.Instance.GetReference("/messages");
-            mMessagesRef.Child(App.AuthManager.CurrentUserUid).OrderByChild("timestamp").AddValueEventListener(this);
+            if (!started)
+            {
+                mMessagesRef = FirebaseDatabase.Instance.GetReference("/messages");
+                mMessagesRef.Child(App.AuthManager.CurrentUserUid).OrderByChild("timestamp").AddChildEventListener(this);
+                started = true;
+            }
+
+            
         }
         public ChatsManager()
         {
+            Log.Debug("Hermes", "created Chats Manager");
             _chats = new Dictionary<string, Chat>();
         }
         public ChatsManager(List<Message> l)
@@ -78,21 +87,6 @@ namespace Hermes
         {
             _chats[partner] = new Chat(partner, new List<Message>());
         }
-        public void OnDataChange(DataSnapshot snapshot)
-        {
-            _chats.Clear();
-
-            foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
-            {
-                Java.Util.HashMap d = i.Value.JavaCast<Java.Util.HashMap>();
-                Message m = new Message();
-                m.FromHashMap(d);
-                m.Timestamp = i.Key.ToString();
-                AddMessage(m);
-            }
-            OnPropertyChanged(nameof(ChatList));
-
-        }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -104,5 +98,35 @@ namespace Hermes
             mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
         }
 
+        public void OnChildAdded(DataSnapshot snapshot, string previousChildName)
+        {
+            Java.Util.HashMap d = snapshot.Value.JavaCast<Java.Util.HashMap>();
+            Message m = new Message();
+            m.FromHashMap(d);
+            AddMessage(m);
+            if (m.Sender != App.AuthManager.CurrentUserUid)
+            {
+                OnPropertyChanged("In");
+            }
+            else
+            {
+                OnPropertyChanged("Out");
+            }
+        }
+
+        public void OnChildChanged(DataSnapshot snapshot, string previousChildName)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnChildMoved(DataSnapshot snapshot, string previousChildName)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnChildRemoved(DataSnapshot snapshot)
+        {
+            //throw new NotImplementedException();
+        }
     }
 }
