@@ -10,6 +10,11 @@ using System.Linq;
 using System.Text;
 using ProfanityFilter;
 using Google.Android.Material.FloatingActionButton;
+using AndroidX.Activity.Result;
+using Android.Provider;
+using Firebase.Storage;
+using Android.Gms.Tasks;
+using AndroidX.DocumentFile.Provider;
 
 namespace Hermes
 {
@@ -21,6 +26,7 @@ namespace Hermes
         private TextView mUser;
         private EditText mMessage;
         private FloatingActionButton mSend;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -36,9 +42,25 @@ namespace Hermes
             mSend = FindViewById<FloatingActionButton>(Resource.Id.message_send);
             mSend.Click += MSend_Click;
 
+            //Intent intent = new Intent(Intent.ActionPick, MediaStore.Images.Media.ExternalContentUri);
+            //intent.SetType("image/* video/*");
+            //StartActivityForResult(intent,120);
         }
 
-
+        //protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        //{
+        //    base.OnActivityResult(requestCode, resultCode, data);
+        //    if (resultCode == Result.Ok)
+        //    {
+        //        StorageReference storageRef = FirebaseStorage.Instance.Reference;
+        //        Android.Net.Uri d = data.Data;
+        //        if (App.StorageManager.UploadFile(d))
+        //        {
+        //            Toast.MakeText(this, "SUccess", ToastLength.Long);
+        //        }
+                
+        //    }
+        //}
 
         private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -59,5 +81,7 @@ namespace Hermes
             App.ChatsManager.SendMessage(m);
             mMessage.Text = "";
         }
+
+
     }
 }
