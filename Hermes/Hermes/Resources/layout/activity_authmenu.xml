@@ -13,14 +13,14 @@
         android:fontFamily="@font/changa_bold"
         android:text="Welcome!"
         android:textSize="@dimen/abc_action_bar_default_height_material"/>
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/authmenu_to_signin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign In!"
         android:fontFamily="@font/changa_regular"
         android:textSize="@dimen/abc_action_bar_icon_vertical_padding_material"/>
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/authmenu_to_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

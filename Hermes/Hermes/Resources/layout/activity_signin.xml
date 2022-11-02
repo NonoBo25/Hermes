@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:hint="Email..."
-        android:background="@drawable/rounded_edittext"
         android:layout_margin="5dp"
         android:gravity="center"
         android:fontFamily="@font/changa_regular"/>
@@ -29,7 +28,6 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:hint="Password..."
-        android:background="@drawable/rounded_edittext"
         android:layout_margin ="5dp"
         android:gravity="center"
         android:fontFamily="@font/changa_regular"/>

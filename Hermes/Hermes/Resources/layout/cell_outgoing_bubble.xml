@@ -19,7 +19,7 @@
         android:paddingRight="20dp"
         android:paddingBottom="10dp"
         android:text="sdkjlfghslkjdgfslfgjkhlsjkfghsldf"
-        android:textColor="@android:color/black"
+        android:textColor="@color/md_theme_light_onPrimary"
         android:textSize="13.5dp"/>
 
 </LinearLayout>

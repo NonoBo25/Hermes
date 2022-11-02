@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProfanityFilter;
+using Google.Android.Material.FloatingActionButton;
 
 namespace Hermes
 {
@@ -19,7 +20,7 @@ namespace Hermes
         private ListView mMessages;
         private TextView mUser;
         private EditText mMessage;
-        private Button mSend;
+        private FloatingActionButton mSend;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -31,8 +32,8 @@ namespace Hermes
             mUser = FindViewById<TextView>(Resource.Id.chat_username);
             mUser.Text = App.UserManager.UsernameById[App.ChatsManager.ChatList[chatId].Partner];
             mMessage = FindViewById<EditText>(Resource.Id.message_input);
-
-            mSend = FindViewById<Button>(Resource.Id.message_send);
+            
+            mSend = FindViewById<FloatingActionButton>(Resource.Id.message_send);
             mSend.Click += MSend_Click;
 
         }
