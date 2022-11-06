@@ -51,6 +51,15 @@
             android:background="@drawable/rounded_edittext"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:background="@color/seed"
+            android:id="@+id/image_attach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/attach_file"
+             />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:background="@color/seed"
             android:id="@+id/message_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

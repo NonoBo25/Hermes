@@ -46,11 +46,12 @@ namespace Hermes
         {
             View row = convertView;
             int res = Resource.Layout.cell_incoming_bubble;
-            int mRes = Resource.Id.msg_incoming;
+            int mRes = Resource.Id.msg_text;
+            int tRes = Resource.Id.msg_time;
+            int imgRes = Resource.Id.msg_image;
             if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
             {
                 res = Resource.Layout.cell_outgoing_bubble;
-                mRes = Resource.Id.msg_outgoing;
             }
             try
             {
@@ -61,6 +62,8 @@ namespace Hermes
 
                 TextView message = row.FindViewById<TextView>(mRes);
                 message.Text = this[position].Content;
+                TextView time = row.FindViewById<TextView>(tRes);
+                time.Text = TextHelper.UnixToTime(this[position].Timestamp);
             }
             catch (Exception ex)
             {

@@ -83,6 +83,10 @@ namespace Hermes
         {
             throw new NotImplementedException();
         }
+        private bool UploadMessageImage(Message m)
+        {
+            return App.StorageManager.UploadFile(m.getLocalUri(),m.Sender)&& App.StorageManager.UploadFile(m.getLocalUri(),m.Recipient);
+        }
         public void NewChat(string partner) 
         {
             _chats[partner] = new Chat(partner, new List<Message>());
@@ -91,7 +95,19 @@ namespace Hermes
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public void SendMessage(Message m) {   
+        public void SendMessage(Message m) {
+            if (m.HasImage)
+            {
+                if (UploadMessageImage(m))
+                {
+                    string url;
+                    if (App.StorageManager.GetFileLink(m.Image.Name,out url))
+                    {
+                        m.Image.IsSafe = true;
+                    }
+                }
+            }
+            
             Java.Util.HashMap mess = m.ToHashMap();
             DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
             dbRef.SetValue(mess);

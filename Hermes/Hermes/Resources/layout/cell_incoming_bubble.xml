@@ -7,20 +7,36 @@
     android:orientation="vertical"
     android:gravity="left"
     >
-    <TextView
-        android:layout_gravity="left"
-        android:id="@+id/msg_incoming"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bubble_incoming"
-        android:lineSpacingExtra="2dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="4dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:text="Hi, How are you?"
-        android:textColor="@color/md_theme_light_onPrimary"
-        android:textSize="13.5dp"
-         />
-
+        android:orientation="vertical"
+        android:background="@drawable/bubble_incoming">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/msg_image"/>
+        <TextView
+            android:layout_gravity="left"
+            android:id="@+id/msg_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="2dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="4dp"
+            android:paddingRight="10dp"
+            android:text="Hi, How are you?"
+            android:textColor="@color/md_theme_light_onPrimary"
+            android:textSize="13.5dp"
+             />
+        <TextView
+            android:id="@+id/msg_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="hh:mm"
+            android:textAlignment="viewEnd"
+            android:layout_gravity="start"
+            android:layout_marginEnd="5dp"
+            android:textSize="12dp"/>
+    </LinearLayout>
 </LinearLayout>

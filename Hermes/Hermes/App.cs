@@ -19,6 +19,7 @@ namespace Hermes
         public static UserManager UserManager;
         public static ChatsManager ChatsManager;
         public static StorageManager StorageManager;
+        public static MediaManager MediaManager;
         private static bool initialized = false;
         public static void init()
         {
@@ -30,6 +31,7 @@ namespace Hermes
                 UserManager = new UserManager();
                 ChatsManager = new ChatsManager();
                 StorageManager = new StorageManager();
+                MediaManager = new MediaManager();
                 initialized= true;
             }
 

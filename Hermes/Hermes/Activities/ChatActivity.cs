@@ -15,6 +15,10 @@ using Android.Provider;
 using Firebase.Storage;
 using Android.Gms.Tasks;
 using AndroidX.DocumentFile.Provider;
+using AndroidX.Activity.Result;
+using static AndroidX.Activity.Result.Contract.ActivityResultContracts;
+using Java.IO;
+using Android.Graphics;
 
 namespace Hermes
 {
@@ -26,7 +30,8 @@ namespace Hermes
         private TextView mUser;
         private EditText mMessage;
         private FloatingActionButton mSend;
-
+        private FloatingActionButton mAttach;
+        private Android.Net.Uri uri=null;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -41,26 +46,26 @@ namespace Hermes
             
             mSend = FindViewById<FloatingActionButton>(Resource.Id.message_send);
             mSend.Click += MSend_Click;
-
-            //Intent intent = new Intent(Intent.ActionPick, MediaStore.Images.Media.ExternalContentUri);
-            //intent.SetType("image/* video/*");
-            //StartActivityForResult(intent,120);
+            mAttach = FindViewById<FloatingActionButton>(Resource.Id.image_attach);
+            mAttach.Click += MAttach_Click;
         }
 
-        //protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
-        //{
-        //    base.OnActivityResult(requestCode, resultCode, data);
-        //    if (resultCode == Result.Ok)
-        //    {
-        //        StorageReference storageRef = FirebaseStorage.Instance.Reference;
-        //        Android.Net.Uri d = data.Data;
-        //        if (App.StorageManager.UploadFile(d))
-        //        {
-        //            Toast.MakeText(this, "SUccess", ToastLength.Long);
-        //        }
-                
-        //    }
-        //}
+        private void MAttach_Click(object sender, EventArgs e)
+        {
+            PickVisualMediaRequest req = new PickVisualMediaRequest.Builder().SetMediaType(PickVisualMedia.ImageOnly.Instance).Build();
+            PickVisualMedia p=new PickVisualMedia();
+           
+            StartActivityForResult(p.CreateIntent(this,req ), 120);
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            if (resultCode == Result.Ok)
+            {
+                uri = data.Data;
+            }
+        }
 
         private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -78,6 +83,10 @@ namespace Hermes
             m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
             m.Content = mMessage.Text;
             m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            if(uri!= null)
+            {
+                m.AttachImage(uri);
+            }
             App.ChatsManager.SendMessage(m);
             mMessage.Text = "";
         }

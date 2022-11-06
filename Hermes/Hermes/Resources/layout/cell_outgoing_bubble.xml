@@ -6,20 +6,37 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="right">
-    <TextView
-        android:gravity="right"
-        android:layout_gravity="right"
-        android:id="@+id/msg_outgoing"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bubble_outgoing"
-        android:lineSpacingExtra="2dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="4dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="10dp"
-        android:text="sdkjlfghslkjdgfslfgjkhlsjkfghsldf"
-        android:textColor="@color/md_theme_light_onPrimary"
-        android:textSize="13.5dp"/>
-
+        android:orientation="vertical"
+        android:background="@drawable/bubble_outgoing">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/msg_image"/>
+        <TextView
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:id="@+id/msg_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:lineSpacingExtra="2dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="4dp"
+            android:paddingRight="20dp"
+            android:text="sdkjlfghslkjdgfslfgjkhlsjkfghsldf"
+            android:textColor="@color/md_theme_light_onPrimary"
+            android:textSize="13.5dp"/>
+        <TextView
+            android:id="@+id/msg_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="hh:mm"
+            android:textAlignment="viewStart"
+            android:layout_gravity="start"
+            android:layout_marginEnd="5dp"
+            android:textSize="12dp"/>
+    </LinearLayout>
 </LinearLayout>
