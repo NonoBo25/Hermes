@@ -79,8 +79,8 @@ namespace Hermes
                 }
                 else if (this[position].HasImage)
                 {
-                    Bitmap bMap = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
-                    img.SetImageBitmap(bMap);
+                    img.SetBackgroundResource(Resource.Drawable.downloading);
+                    img.SetImageBitmap(null);
                     img.Visibility = ViewStates.Visible;
                     Thread t = new Thread(new ThreadStart(delegate
                     {
@@ -93,13 +93,13 @@ namespace Hermes
 
                         ((Activity)sContext).RunOnUiThread(() =>
                         {
+                            img.SetBackgroundDrawable(null);
                             img.SetImageBitmap(bmp);
                             img.Visibility = ViewStates.Visible;
                         });
 
                     }));
                     t.Start();
-                  
                 }
                 else
                 {
