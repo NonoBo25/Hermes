@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Gms.Tasks;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Hermes
 {
@@ -95,23 +97,21 @@ namespace Hermes
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public void SendMessage(Message m) {
-            if (m.HasImage)
-            {
-                if (UploadMessageImage(m))
-                {
-                    string url;
-                    if (App.StorageManager.GetFileLink(m.Image.Name,out url))
-                    {
-                        m.Image.IsSafe = true;
-                    }
-                }
-            }
-            
+        public bool SendMessage(Message m) {
             Java.Util.HashMap mess = m.ToHashMap();
             DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
-            dbRef.SetValue(mess);
-            mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
+            Task rec = dbRef.SetValue(mess);
+            
+            Task sen = mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                if (m.HasImage)
+                {
+                    UploadMessageImage(m);
+                }
+            }));
+            t.Start();
+            return true;
         }
 
         public void OnChildAdded(DataSnapshot snapshot, string previousChildName)

@@ -18,8 +18,8 @@ namespace Hermes
         public bool IsSafe { get; set; }
         public void FromHashMap(HashMap map)
         {
-            Name = map.Get("name").ToString();
-            IsSafe = bool.Parse( map.Get("issafe").ToString());
+            Name = map.Get("Name").ToString();
+            IsSafe = bool.Parse( map.Get("IsSafe").ToString());
         }
 
         public HashMap ToHashMap()

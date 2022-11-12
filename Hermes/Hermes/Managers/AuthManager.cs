@@ -28,7 +28,7 @@ namespace Hermes
             Task signin = mAuth.SignInWithEmailAndPassword(u.Email, u.Password);
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(signin); return; }));
+                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(signin); }));
                 thr.Start();
                 thr.Join();
                 return signin.IsSuccessful;
@@ -47,6 +47,7 @@ namespace Hermes
                 Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(signup); return; }));
                 thr.Start();
                 thr.Join();
+
                 if (signup.IsSuccessful)
                 {
                     if (SignIn(u))

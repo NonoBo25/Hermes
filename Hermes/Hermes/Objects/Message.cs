@@ -7,6 +7,7 @@ using Android.Widget;
 using AndroidX.DocumentFile.Provider;
 using Java.Interop;
 using Java.Util;
+using Org.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Hermes
         
         public string Timestamp { get; set; }
         public bool HasImage { get; private set; }
-        public Image Image { get; set; }
+        public Image Img { get; set; }
         private Android.Net.Uri localFileUri;
         
         public void FromHashMap(HashMap map)
@@ -35,11 +36,15 @@ namespace Hermes
             HasImage = bool.Parse(map.Get("hasimage").ToString());
             if (HasImage)
             {
-                Image = new Image();
-                Image.FromHashMap((HashMap)map.Get("image"));
-            }
+                Img = new Image();
+                string dict = map.Get("image").ToString();
+                Dictionary<string,object> d = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,object>>(dict);
+                Img.FromHashMap(new HashMap(d));
 
+            }
         }
+
+        
 
         public HashMap ToHashMap()
         {
@@ -50,8 +55,8 @@ namespace Hermes
             res.Put("timestamp", (Java.Lang.Object)Firebase.Database.ServerValue.Timestamp);
             res.Put("hasimage", HasImage);
             if (HasImage)
-            {
-                res.Put("image", Image.ToHashMap());
+            {                
+                res.Put("image", System.Text.Json.JsonSerializer.Serialize(Img));
             }
             
             return res;
@@ -62,7 +67,7 @@ namespace Hermes
             this.HasImage=true;
             DocumentFile f = DocumentFile.FromSingleUri(Application.Context, uri);
 
-            this.Image = new Image() { Name = f.Name }; 
+            this.Img = new Image() { Name = f.Name }; 
         }
         public Android.Net.Uri getLocalUri()
         {

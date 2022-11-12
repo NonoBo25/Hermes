@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Activities\AuthMenuActivity.cs" />
     <Compile Include="Activities\ChatActivity.cs" />
+    <Compile Include="Activities\ImageMessageActivity.cs" />
     <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Activities\MainPageActivity.cs" />
     <Compile Include="Activities\SignInActivity.cs" />
@@ -78,13 +79,13 @@
     <Compile Include="App.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\MediaHelper.cs" />
+    <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="Managers\AndroidNotificationManager.cs" />
     <Compile Include="BootBroadcastReceiver.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\ChatsManager.cs" />
-    <Compile Include="Managers\MediaManager.cs" />
     <Compile Include="Managers\StorageManager.cs" />
-    <Compile Include="Managers\TimeManager.cs" />
     <Compile Include="Managers\UserManager.cs" />
     <Compile Include="Objects\IFirebaseObject.cs" />
     <Compile Include="Objects\Image.cs" />
@@ -240,6 +241,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\attach_file.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_image_message.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -54,7 +54,6 @@ namespace Hermes
         public void RegisterUsername(string uid,string username)
         {
             mRef.Child(uid).SetValue(new Java.Lang.String(username));
-
         }
 
     }

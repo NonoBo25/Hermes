@@ -14,24 +14,20 @@ namespace Hermes
 {
     public static class App
     {
-        public static TimeManager TimeManager;
         public static AuthManager AuthManager;
         public static UserManager UserManager;
         public static ChatsManager ChatsManager;
         public static StorageManager StorageManager;
-        public static MediaManager MediaManager;
         private static bool initialized = false;
         public static void init()
         {
             if (!initialized)
             {
                 Log.Debug("HERMES-APP", "INIT");
-                TimeManager = new TimeManager();
                 AuthManager = new AuthManager();
                 UserManager = new UserManager();
                 ChatsManager = new ChatsManager();
                 StorageManager = new StorageManager();
-                MediaManager = new MediaManager();
                 initialized= true;
             }
 

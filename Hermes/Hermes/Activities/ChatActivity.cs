@@ -61,9 +61,32 @@ namespace Hermes
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-            if (resultCode == Result.Ok)
+            switch (requestCode)
             {
-                uri = data.Data;
+                case 120:
+                    if (resultCode == Result.Ok)
+                    {
+                        uri = data.Data;
+                        Intent intent = new Intent(this,typeof(ImageMessageActivity));
+                        intent.PutExtra("path",uri.ToString());
+                        intent.PutExtra("chatId", chatId);
+                        StartActivityForResult(intent, 220);
+
+                    }
+                    break;
+                case 220:
+                    if (resultCode == Result.Ok)
+                    {
+                        Toast.MakeText(this,"Message Sent!",ToastLength.Short).Show();
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "Error Try Again!", ToastLength.Short).Show();
+                    }
+                    break;
+                default:
+                    break;
+
             }
         }
 
@@ -83,12 +106,14 @@ namespace Hermes
             m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
             m.Content = mMessage.Text;
             m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            if(uri!= null)
+            if (!App.ChatsManager.SendMessage(m))
             {
-                m.AttachImage(uri);
+                Toast.MakeText(this, "Error Sending Message!", ToastLength.Long).Show();
             }
-            App.ChatsManager.SendMessage(m);
-            mMessage.Text = "";
+            else
+            {
+                mMessage.Text = "";
+            }
         }
 
 

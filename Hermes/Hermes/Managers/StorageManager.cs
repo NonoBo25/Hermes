@@ -41,10 +41,24 @@ namespace Hermes
         public bool GetFileLink(string fileName,out string link)
         {
             link = "";
-            Task download = mStorage.Reference.Child("files/" + App.AuthManager.CurrentUserUid + "/" + fileName).GetDownloadUrl();
+            Task download = mStorage.Reference.Child("files/" + App.AuthManager.CurrentUserUid + "/" + fileName).GetDownloadUrl(); 
+
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(download); return; }));
+                Thread thr = new Thread(new ThreadStart(delegate {
+                    while (true)
+                    {
+                        try
+                        {
+                            Android.Gms.Tasks.TasksClass.Await(download);
+                            return;
+                        }
+                        catch(Exception ex)
+                        {
+                            continue;
+                        }
+                    }
+                }));
                 thr.Start();
                 thr.Join();
                 if (download.IsSuccessful)
