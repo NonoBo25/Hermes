@@ -38,8 +38,11 @@ namespace Hermes
 
         private void ChatsManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            mListView.Adapter = null;   
-            mListView.Adapter = new ChatAdapter(this);
+            RunOnUiThread(() =>
+            {
+                mListView.Adapter = null;
+                mListView.Adapter = new ChatAdapter(this);
+            });
         }
 
         private void MListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)

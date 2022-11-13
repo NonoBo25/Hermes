@@ -70,36 +70,46 @@ namespace Hermes
                 time.Text = TextHelper.UnixToTime(this[position].Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
-                if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
+                if (this[position].ImageUri!=""&& this[position].ImageUri != null)
                 {
-                    img.SetImageBitmap(App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp]);
-                    img.Visibility = ViewStates.Visible;
-                    img.LayoutParameters.Width = dpToPx(200,sContext);
-                    img.LayoutParameters.Height = dpToPx(200,sContext);
-                }
-                else if (this[position].HasImage)
-                {
-                    Bitmap bMap = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
-                    img.SetImageBitmap(bMap);
-                    img.Visibility = ViewStates.Visible;
-                    Thread t = new Thread(new ThreadStart(delegate
+                    if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
                     {
-                        string link = "";
-                        App.StorageManager.GetFileLink(this[position].Img.Name, out link);
-                        URL url = new URL(link);
-                        Bitmap bmp;
-                        bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
-                        App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
-
-                        ((Activity)sContext).RunOnUiThread(() =>
+                        Bitmap bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
+                        img.SetImageBitmap(bmImg);
+                        img.Visibility = ViewStates.Visible;
+                    }
+                    else
+                    {
+                        if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
                         {
-                            img.SetImageBitmap(bmp);
+                            img.SetImageBitmap(App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp]);
                             img.Visibility = ViewStates.Visible;
-                        });
-
-                    }));
-                    t.Start();
-                  
+                            img.LayoutParameters.Width = dpToPx(200, sContext);
+                            img.LayoutParameters.Height = dpToPx(200, sContext);
+                        }
+                        else if (this[position].ImageLink != "" && this[position].ImageLink != null)
+                        {
+                            Bitmap bMap = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
+                            img.SetImageBitmap(bMap);
+                            img.Visibility = ViewStates.Visible;
+                            Thread t = new Thread(new ThreadStart(delegate
+                            {
+                                Bitmap bmp= BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
+                                if (MediaHelper.isSafe(this[position].ImageLink))
+                                {
+                                    URL url = new URL(this[position].ImageLink);
+                                    bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
+                                }
+                                App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
+                                ((Activity)sContext).RunOnUiThread(() =>
+                                {
+                                    img.SetImageBitmap(bmp);
+                                    img.Visibility = ViewStates.Visible;
+                                });
+                            }));
+                            t.Start();
+                        }
+                    }
                 }
                 else
                 {

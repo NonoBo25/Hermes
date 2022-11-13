@@ -67,21 +67,12 @@ namespace Hermes
                     if (resultCode == Result.Ok)
                     {
                         uri = data.Data;
+                        Application.Context.ContentResolver.TakePersistableUriPermission(uri, ActivityFlags.GrantReadUriPermission) ;
                         Intent intent = new Intent(this,typeof(ImageMessageActivity));
                         intent.PutExtra("path",uri.ToString());
                         intent.PutExtra("chatId", chatId);
                         StartActivityForResult(intent, 220);
 
-                    }
-                    break;
-                case 220:
-                    if (resultCode == Result.Ok)
-                    {
-                        Toast.MakeText(this,"Message Sent!",ToastLength.Short).Show();
-                    }
-                    else
-                    {
-                        Toast.MakeText(this, "Error Try Again!", ToastLength.Short).Show();
                     }
                     break;
                 default:
@@ -92,8 +83,12 @@ namespace Hermes
 
         private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            mMessages.Adapter = null;
-            mMessages.Adapter=new MessagesAdapter(this, chatId);
+            RunOnUiThread(() =>
+            {
+                mMessages.Adapter = null;
+                mMessages.Adapter = new MessagesAdapter(this, chatId);
+            });
+
         }
 
         private void MSend_Click(object sender, EventArgs e)
@@ -106,14 +101,9 @@ namespace Hermes
             m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
             m.Content = mMessage.Text;
             m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            if (!App.ChatsManager.SendMessage(m))
-            {
-                Toast.MakeText(this, "Error Sending Message!", ToastLength.Long).Show();
-            }
-            else
-            {
-                mMessage.Text = "";
-            }
+            m.ImageLink = "";
+            m.ImageUri = "";
+            App.ChatsManager.SendMessage(m);
         }
 
 

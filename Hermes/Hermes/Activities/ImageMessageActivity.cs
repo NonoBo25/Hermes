@@ -43,17 +43,10 @@ namespace Hermes
             m.Recipient = App.ChatsManager.ChatList[chatId].Partner;
             m.Content = message.Text;
             m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            m.AttachImage(imgUri);
-            if (!App.ChatsManager.SendMessage(m))
-            {
-                Toast.MakeText(this, "Error Sending Message!", ToastLength.Long).Show();
-            }
-            else
-            {
-                this.SetResult(Result.Ok);
-                Finish();
-            }
-            
+            m.ImageUri = Intent.GetStringExtra("path");
+            m.ImageLink = "";
+            App.ChatsManager.SendMessage(m);
+            Finish();
         }
 
         protected override void OnStart()

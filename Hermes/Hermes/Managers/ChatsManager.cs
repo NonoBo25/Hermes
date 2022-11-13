@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.DocumentFile.Provider;
 using Firebase.Auth;
 using Firebase.Database;
 using System;
@@ -22,6 +23,7 @@ namespace Hermes
         private DatabaseReference mMessagesRef;
         private Dictionary<string, Chat> _chats;
         private bool started = false;
+        private bool justSent = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void Start()
@@ -71,14 +73,33 @@ namespace Hermes
             {
                 key = m.Recipient;
             }
+            else
+            {
+                if (m.ImageUri != "" && m.ImageUri != null)
+                {
+                    Android.Net.Uri u = Android.Net.Uri.Parse(m.ImageUri);
+                    string l = "";
+                    App.StorageManager.GetFileLink(u.LastPathSegment, out l);
+                    m.ImageLink = l;
+                }
+
+            }
+
             if (_chats.Keys.Contains(key))
             {
+                //if (_chats[key].Messages[_chats[key].Messages.Count - 1].CompareIgnoreTimestamp(m)&&justSent)
+                //{
+                //    _chats[key].Messages.RemoveAt(_chats[key].Messages.Count - 1);
+                //    justSent = false;
+                //}
                 _chats[key].Messages.Add(m);
             }
             else
             {
-                _chats[key]=new Chat(key,new List<Message> { m });
+                _chats[key] = new Chat(key, new List<Message> { m });
             }
+
+
         }
 
         public void OnCancelled(DatabaseError error)
@@ -87,7 +108,8 @@ namespace Hermes
         }
         private bool UploadMessageImage(Message m)
         {
-            return App.StorageManager.UploadFile(m.getLocalUri(),m.Sender)&& App.StorageManager.UploadFile(m.getLocalUri(),m.Recipient);
+            Android.Net.Uri uri = Android.Net.Uri.Parse(m.ImageUri);
+            return App.StorageManager.UploadFile(uri, m.Recipient);
         }
         public void NewChat(string partner) 
         {
@@ -97,21 +119,30 @@ namespace Hermes
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public bool SendMessage(Message m) {
-            Java.Util.HashMap mess = m.ToHashMap();
-            DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
-            Task rec = dbRef.SetValue(mess);
-            
-            Task sen = mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
+        public void SendMessage(Message m) {
+            //this._chats[m.Recipient].Messages.Add(m);
+            //int index = this._chats[m.Recipient].Messages.Count - 1;
             Thread t = new Thread(new ThreadStart(delegate
             {
-                if (m.HasImage)
-                {
-                    UploadMessageImage(m);
-                }
+                Thread t = new Thread(new ThreadStart(delegate {
+                    if (m.ImageUri != null && m.ImageUri != "")
+                    {
+                        UploadMessageImage(m);
+                    }
+                }));
+                t.Start();
+                Java.Util.HashMap mess = m.ToHashMap();
+                DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
+                Task sen = mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);
+                TaskHelper.AwaitAndroidTask(ref sen);
+                t.Join();
+                Task rec = dbRef.SetValue(mess);  
+                TaskHelper.AwaitAndroidTask(ref rec);
+                justSent = true;
+                return;
             }));
             t.Start();
-            return true;
+            return;
         }
 
         public void OnChildAdded(DataSnapshot snapshot, string previousChildName)

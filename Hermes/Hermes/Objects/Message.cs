@@ -23,25 +23,17 @@ namespace Hermes
         public string Recipient { get; set; }
         
         public string Timestamp { get; set; }
-        public bool HasImage { get; private set; }
-        public Image Img { get; set; }
-        private Android.Net.Uri localFileUri;
+        public string ImageLink { get; set; }
+        public string ImageUri { get; set; }
         
         public void FromHashMap(HashMap map)
         {
-            Content = map.Get("content").ToString();
-            Sender = map.Get("sender").ToString();
-            Recipient = map.Get("recipient").ToString();
-            Timestamp = map.Get("timestamp").ToString();
-            HasImage = bool.Parse(map.Get("hasimage").ToString());
-            if (HasImage)
-            {
-                Img = new Image();
-                string dict = map.Get("image").ToString();
-                Dictionary<string,object> d = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,object>>(dict);
-                Img.FromHashMap(new HashMap(d));
-
-            }
+            Content = map.Get("Content").ToString();
+            Sender = map.Get("Sender").ToString();
+            Recipient = map.Get("Recipient").ToString();
+            Timestamp = map.Get("Timestamp").ToString();
+            ImageLink = map.Get("ImageLink").ToString();
+            ImageUri = map.Get("ImageUri").ToString();
         }
 
         
@@ -49,30 +41,20 @@ namespace Hermes
         public HashMap ToHashMap()
         {
             HashMap res = new HashMap();
-            res.Put("content", Content);
-            res.Put("sender", Sender);
-            res.Put("recipient", Recipient);
-            res.Put("timestamp", (Java.Lang.Object)Firebase.Database.ServerValue.Timestamp);
-            res.Put("hasimage", HasImage);
-            if (HasImage)
-            {                
-                res.Put("image", System.Text.Json.JsonSerializer.Serialize(Img));
-            }
-            
+            res.Put("Content", Content);
+            res.Put("Sender", Sender);
+            res.Put("Recipient", Recipient);
+            res.Put("Timestamp", (Java.Lang.Object)Firebase.Database.ServerValue.Timestamp);
+            res.Put("ImageLink", ImageLink);
+            res.Put("ImageUri", ImageUri);
             return res;
         }
-        public void AttachImage(Android.Net.Uri uri)
+        
+        public bool CompareIgnoreTimestamp(Message m)
         {
-            this.localFileUri = uri;
-            this.HasImage=true;
-            DocumentFile f = DocumentFile.FromSingleUri(Application.Context, uri);
+            return m.Content.Equals(Content) && m.Sender.Equals(Sender) && m.Recipient.Equals(Recipient) && m.ImageLink.Equals(ImageLink) && m.ImageUri.Equals(ImageUri);
+        }
 
-            this.Img = new Image() { Name = f.Name }; 
-        }
-        public Android.Net.Uri getLocalUri()
-        {
-            return localFileUri;
-        }
 
     }
 }

@@ -12,6 +12,8 @@ using Firebase.Storage;
 using AndroidX.DocumentFile.Provider;
 using Android.Gms.Tasks;
 using System.Threading;
+using Java.IO;
+using System.IO;
 
 namespace Hermes
 {
@@ -25,10 +27,14 @@ namespace Hermes
         public bool UploadFile(Android.Net.Uri file,string uid)
         {
             DocumentFile f = DocumentFile.FromSingleUri(Application.Context, file);
-            Task upload = mStorage.Reference.Child("files/" + uid + "/" + f.Name).PutFile(file);
+            Stream  s= Application.Context.ContentResolver.OpenInputStream(file);
+            Task upload = mStorage.Reference.Child("files/" + uid + "/" + f.Name).PutStream(s);
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(upload); return; }));
+                Thread thr = new Thread(new ThreadStart(delegate { 
+                    Android.Gms.Tasks.TasksClass.Await(upload); 
+                    return; 
+                }));
                 thr.Start();
                 thr.Join();
                 return upload.IsSuccessful;
@@ -38,27 +44,15 @@ namespace Hermes
                 return false;
             }
         }
+
         public bool GetFileLink(string fileName,out string link)
         {
             link = "";
-            Task download = mStorage.Reference.Child("files/" + App.AuthManager.CurrentUserUid + "/" + fileName).GetDownloadUrl(); 
+            Task download = mStorage.Reference.Child("files/" + App.AuthManager.CurrentUserUid + "/" + fileName+".jpg").GetDownloadUrl(); 
 
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate {
-                    while (true)
-                    {
-                        try
-                        {
-                            Android.Gms.Tasks.TasksClass.Await(download);
-                            return;
-                        }
-                        catch(Exception ex)
-                        {
-                            continue;
-                        }
-                    }
-                }));
+                Thread thr = new Thread(new ThreadStart(delegate {Android.Gms.Tasks.TasksClass.Await(download);return;}));
                 thr.Start();
                 thr.Join();
                 if (download.IsSuccessful)
