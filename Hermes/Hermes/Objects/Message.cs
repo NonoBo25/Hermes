@@ -25,6 +25,7 @@ namespace Hermes
         public string Timestamp { get; set; }
         public string ImageLink { get; set; }
         public string ImageUri { get; set; }
+        public bool IsImageSafe { get; set; }
         
         public void FromHashMap(HashMap map)
         {
@@ -34,6 +35,7 @@ namespace Hermes
             Timestamp = map.Get("Timestamp").ToString();
             ImageLink = map.Get("ImageLink").ToString();
             ImageUri = map.Get("ImageUri").ToString();
+            IsImageSafe = bool.Parse(map.Get("IsImageSafe").ToString());
         }
 
         
@@ -47,12 +49,13 @@ namespace Hermes
             res.Put("Timestamp", (Java.Lang.Object)Firebase.Database.ServerValue.Timestamp);
             res.Put("ImageLink", ImageLink);
             res.Put("ImageUri", ImageUri);
+            res.Put("IsImageSafe", IsImageSafe);
             return res;
         }
         
         public bool CompareIgnoreTimestamp(Message m)
         {
-            return m.Content.Equals(Content) && m.Sender.Equals(Sender) && m.Recipient.Equals(Recipient) && m.ImageLink.Equals(ImageLink) && m.ImageUri.Equals(ImageUri);
+            return m.Content.Equals(Content) && m.Sender.Equals(Sender) && m.Recipient.Equals(Recipient) && m.ImageLink.Equals(ImageLink) && m.ImageUri.Equals(ImageUri)&&m.IsImageSafe.Equals(IsImageSafe);
         }
 
 

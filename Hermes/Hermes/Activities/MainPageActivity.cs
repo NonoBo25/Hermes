@@ -40,8 +40,7 @@ namespace Hermes
         {
             RunOnUiThread(() =>
             {
-                mListView.Adapter = null;
-                mListView.Adapter = new ChatAdapter(this);
+                ((ChatAdapter)mListView.Adapter).NotifyDataSetChanged();
             });
         }
 

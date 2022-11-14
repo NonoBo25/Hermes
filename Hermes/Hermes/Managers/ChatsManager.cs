@@ -131,6 +131,10 @@ namespace Hermes
                     }
                 }));
                 t.Start();
+                if(m.ImageUri != null)
+                {
+                    m.IsImageSafe = MediaHelper.isSafe(Android.Net.Uri.Parse(m.ImageUri));
+                }
                 Java.Util.HashMap mess = m.ToHashMap();
                 DatabaseReference dbRef = mMessagesRef.Child(m.Recipient).Push();
                 Task sen = mMessagesRef.Child(m.Sender).Child(dbRef.Key).SetValue(mess);

@@ -85,8 +85,7 @@ namespace Hermes
         {
             RunOnUiThread(() =>
             {
-                mMessages.Adapter = null;
-                mMessages.Adapter = new MessagesAdapter(this, chatId);
+                ((MessagesAdapter)mMessages.Adapter).NotifyDataSetChanged();
             });
 
         }

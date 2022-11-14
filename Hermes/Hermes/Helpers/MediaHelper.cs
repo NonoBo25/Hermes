@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -15,21 +17,19 @@ namespace Hermes
 {
     public static class MediaHelper
     {
-        public const string api_link = "https://nsfw-images-detection-and-classification.p.rapidapi.com/adult-content";
-        public static bool isSafe(string link)
+        public static bool isSafe(Android.Net.Uri image)
         {
-            
-            var client = new RestClient("https://nsfw-images-detection-and-classification.p.rapidapi.com/adult-content");
-            var request = new RestRequest();
-            request.Method = Method.Post;
-            request.AddHeader("content-type", "application/json");
-            request.AddHeader("X-RapidAPI-Key", "18aab05467msh0c14beaf82e5283p12df52jsn189c89c5c450");
-            request.AddHeader("X-RapidAPI-Host", "nsfw-images-detection-and-classification.p.rapidapi.com");
-            request.AddParameter("application/json", "{\"url\":\"" + link + "\"}", ParameterType.RequestBody);
-            RestResponse response = client.Execute(request);
-            Dictionary<string,object> dic = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Content);
+            TensorflowClassifier cls = new TensorflowClassifier();
+            float[] res=cls.Classify(UriToByteArray(image));
+            return res[0] > res[1];
+        }
+        private static byte[] UriToByteArray(Android.Net.Uri uri)
+        {
+            Bitmap bm = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(uri)); ;
+            MemoryStream s = new MemoryStream();
+            bm.Compress(Bitmap.CompressFormat.Jpeg, 100, s); //bm is the bitmap object
+            return s.ToArray();
 
-            return !(bool)dic["unsafe"];
         }
     }
 }

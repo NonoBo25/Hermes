@@ -81,6 +81,7 @@
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\MediaHelper.cs" />
     <Compile Include="Helpers\TaskHelper.cs" />
+    <Compile Include="ImageClassification\TensorflowClassifier.cs" />
     <Compile Include="Managers\AndroidNotificationManager.cs" />
     <Compile Include="BootBroadcastReceiver.cs" />
     <Compile Include="Managers\AuthManager.cs" />
@@ -101,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
+    <AndroidAsset Include="Assets\model.tflite" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -192,6 +194,9 @@
     </PackageReference>
     <PackageReference Include="Xamarin.GooglePlayServices.Tasks">
       <Version>118.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.TensorFlow.Lite">
+      <Version>2.10.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

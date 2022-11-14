@@ -53,7 +53,6 @@ namespace Hermes
             int res = Resource.Layout.cell_incoming_bubble;
             int mRes = Resource.Id.msg_text;
             int tRes = Resource.Id.msg_time;
-            int imgRes = Resource.Id.msg_image;
             if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
             {
                 res = Resource.Layout.cell_outgoing_bubble;
@@ -63,59 +62,70 @@ namespace Hermes
                 if (row == null)
                 {
                     row = LayoutInflater.From(sContext).Inflate(res, null, false);
-                }
-                TextView message = row.FindViewById<TextView>(mRes);
-                message.Text = this[position].Content;
-                TextView time = row.FindViewById<TextView>(tRes);
-                time.Text = TextHelper.UnixToTime(this[position].Timestamp);
-                ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
-                img.Visibility = ViewStates.Invisible;
-                if (this[position].ImageUri!=""&& this[position].ImageUri != null)
-                {
-                    if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+                    TextView message = row.FindViewById<TextView>(mRes);
+                    message.Text = this[position].Content;
+                    TextView time = row.FindViewById<TextView>(tRes);
+                    time.Text = TextHelper.UnixToTime(this[position].Timestamp);
+                    ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
+                    img.Visibility = ViewStates.Invisible;
+                    if (this[position].ImageUri != "" && this[position].ImageUri != null)
                     {
-                        Bitmap bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
+                        Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
+                        if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+                        {
+                            if (this[position].IsImageSafe)
+                            {
+                                try
+                                {
+                                    bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
+
+                                }
+                                catch { }
+
+
+                            }
+                            img.SetImageBitmap(bmImg);
+                            img.Visibility = ViewStates.Visible;
+
+                        }
+                        else
+                        {
+                            if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
+                            {
+                                bmImg = App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp];
+                            }
+                            else if (this[position].ImageLink != "" && this[position].ImageLink != null)
+                            {
+                                if (this[position].IsImageSafe)
+                                {
+                                    Thread t = new Thread(new ThreadStart(delegate
+                                    {
+                                        URL url = new URL(this[position].ImageLink);
+                                        Bitmap bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
+                                        App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
+                                        ((Activity)sContext).RunOnUiThread(() =>
+                                        {
+                                            img.SetImageBitmap(bmp);
+                                            img.Visibility = ViewStates.Visible;
+                                        });
+                                    }));
+                                    t.Start();
+                                }
+
+                            }
+                        }
                         img.SetImageBitmap(bmImg);
                         img.Visibility = ViewStates.Visible;
+                        img.LayoutParameters.Width = dpToPx(200, sContext);
+                        img.LayoutParameters.Height = dpToPx(200, sContext);
                     }
                     else
                     {
-                        if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
-                        {
-                            img.SetImageBitmap(App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp]);
-                            img.Visibility = ViewStates.Visible;
-                            img.LayoutParameters.Width = dpToPx(200, sContext);
-                            img.LayoutParameters.Height = dpToPx(200, sContext);
-                        }
-                        else if (this[position].ImageLink != "" && this[position].ImageLink != null)
-                        {
-                            Bitmap bMap = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
-                            img.SetImageBitmap(bMap);
-                            img.Visibility = ViewStates.Visible;
-                            Thread t = new Thread(new ThreadStart(delegate
-                            {
-                                Bitmap bmp= BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
-                                if (MediaHelper.isSafe(this[position].ImageLink))
-                                {
-                                    URL url = new URL(this[position].ImageLink);
-                                    bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
-                                }
-                                App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
-                                ((Activity)sContext).RunOnUiThread(() =>
-                                {
-                                    img.SetImageBitmap(bmp);
-                                    img.Visibility = ViewStates.Visible;
-                                });
-                            }));
-                            t.Start();
-                        }
+                        img.LayoutParameters.Width = 0;
+                        img.LayoutParameters.Height = 0;
                     }
                 }
-                else
-                {
-                    img.LayoutParameters.Width = 0;
-                    img.LayoutParameters.Height = 0;
-                }
+                
             }
             catch (Exception ex)
             {
