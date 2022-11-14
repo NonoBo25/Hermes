@@ -131,7 +131,7 @@ namespace Hermes
                     }
                 }));
                 t.Start();
-                if(m.ImageUri != null)
+                if(m.ImageUri != null && m.ImageUri != "")
                 {
                     m.IsImageSafe = MediaHelper.isSafe(Android.Net.Uri.Parse(m.ImageUri));
                 }

@@ -59,73 +59,75 @@ namespace Hermes
             }
             try
             {
+
+
                 if (row == null)
                 {
                     row = LayoutInflater.From(sContext).Inflate(res, null, false);
-                    TextView message = row.FindViewById<TextView>(mRes);
-                    message.Text = this[position].Content;
-                    TextView time = row.FindViewById<TextView>(tRes);
-                    time.Text = TextHelper.UnixToTime(this[position].Timestamp);
-                    ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
-                    img.Visibility = ViewStates.Invisible;
-                    if (this[position].ImageUri != "" && this[position].ImageUri != null)
+
+                }
+                TextView message = row.FindViewById<TextView>(mRes);
+                message.Text = this[position].Content;
+                TextView time = row.FindViewById<TextView>(tRes);
+                time.Text = TextHelper.UnixToTime(this[position].Timestamp);
+                ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
+                img.Visibility = ViewStates.Invisible;
+                if (this[position].ImageUri != "" && this[position].ImageUri != null)
+                {
+                    Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
+                    if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
                     {
-                        Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
-                        if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+                        if (this[position].IsImageSafe)
                         {
-                            if (this[position].IsImageSafe)
+                            try
                             {
-                                try
-                                {
-                                    bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
-
-                                }
-                                catch { }
-
+                                bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
 
                             }
-                            img.SetImageBitmap(bmImg);
-                            img.Visibility = ViewStates.Visible;
+                            catch { }
 
-                        }
-                        else
-                        {
-                            if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
-                            {
-                                bmImg = App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp];
-                            }
-                            else if (this[position].ImageLink != "" && this[position].ImageLink != null)
-                            {
-                                if (this[position].IsImageSafe)
-                                {
-                                    Thread t = new Thread(new ThreadStart(delegate
-                                    {
-                                        URL url = new URL(this[position].ImageLink);
-                                        Bitmap bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
-                                        App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
-                                        ((Activity)sContext).RunOnUiThread(() =>
-                                        {
-                                            img.SetImageBitmap(bmp);
-                                            img.Visibility = ViewStates.Visible;
-                                        });
-                                    }));
-                                    t.Start();
-                                }
 
-                            }
                         }
                         img.SetImageBitmap(bmImg);
                         img.Visibility = ViewStates.Visible;
-                        img.LayoutParameters.Width = dpToPx(200, sContext);
-                        img.LayoutParameters.Height = dpToPx(200, sContext);
+
                     }
                     else
                     {
-                        img.LayoutParameters.Width = 0;
-                        img.LayoutParameters.Height = 0;
+                        if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
+                        {
+                            bmImg = App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp];
+                        }
+                        else if (this[position].ImageLink != "" && this[position].ImageLink != null)
+                        {
+                            if (this[position].IsImageSafe)
+                            {
+                                Thread t = new Thread(new ThreadStart(delegate
+                                {
+                                    URL url = new URL(this[position].ImageLink);
+                                    Bitmap bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
+                                    App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
+                                    ((Activity)sContext).RunOnUiThread(() =>
+                                    {
+                                        img.SetImageBitmap(bmp);
+                                        img.Visibility = ViewStates.Visible;
+                                    });
+                                }));
+                                t.Start();
+                            }
+
+                        }
                     }
+                    img.SetImageBitmap(bmImg);
+                    img.Visibility = ViewStates.Visible;
+                    img.LayoutParameters.Width = dpToPx(200, sContext);
+                    img.LayoutParameters.Height = dpToPx(200, sContext);
                 }
-                
+                else
+                {
+                    img.LayoutParameters.Width = 0;
+                    img.LayoutParameters.Height = 0;
+                }
             }
             catch (Exception ex)
             {

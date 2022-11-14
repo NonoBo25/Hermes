@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
+
 namespace Hermes
 {
 
@@ -34,6 +36,7 @@ namespace Hermes
             mListView.ItemClick += MListView_ItemClick;
             search = FindViewById<SearchView>(Resource.Id.search);
             search.QueryTextSubmit += Search_QueryTextSubmit;
+
         }
 
         private void ChatsManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
