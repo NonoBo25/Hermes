@@ -51,30 +51,26 @@ namespace Hermes
         {
             View row = convertView;
             int res = Resource.Layout.cell_incoming_bubble;
-            int mRes = Resource.Id.msg_text;
-            int tRes = Resource.Id.msg_time;
             if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
             {
                 res = Resource.Layout.cell_outgoing_bubble;
             }
             try
             {
-
-
                 if (row == null)
                 {
                     row = LayoutInflater.From(sContext).Inflate(res, null, false);
 
                 }
-                TextView message = row.FindViewById<TextView>(mRes);
+                TextView message = row.FindViewById<TextView>(Resource.Id.msg_text);
                 message.Text = this[position].Content;
-                TextView time = row.FindViewById<TextView>(tRes);
+                TextView time = row.FindViewById<TextView>(Resource.Id.msg_time);
                 time.Text = TextHelper.UnixToTime(this[position].Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
                 if (this[position].ImageUri != "" && this[position].ImageUri != null)
                 {
-                    Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.xamagonBlue);
+                    Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.forbidden);
                     if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
                     {
                         if (this[position].IsImageSafe)
@@ -82,11 +78,8 @@ namespace Hermes
                             try
                             {
                                 bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
-
                             }
                             catch { }
-
-
                         }
                         img.SetImageBitmap(bmImg);
                         img.Visibility = ViewStates.Visible;
@@ -100,6 +93,7 @@ namespace Hermes
                         }
                         else if (this[position].ImageLink != "" && this[position].ImageLink != null)
                         {
+                            bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.pending);
                             if (this[position].IsImageSafe)
                             {
                                 Thread t = new Thread(new ThreadStart(delegate
