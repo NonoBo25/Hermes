@@ -14,21 +14,18 @@ using System.Threading;
 
 namespace Hermes
 {
-    public class AuthManager
+    public static class AuthManager
     {
-        private FirebaseAuth mAuth;
-        public AuthManager()
-        {
-            mAuth = FirebaseAuth.Instance;
-        }
-        
-
-        public bool SignIn(UserData u)
+        private static FirebaseAuth mAuth = FirebaseAuth.Instance;
+        public static bool SignIn(UserData u)
         {
             Task signin = mAuth.SignInWithEmailAndPassword(u.Email, u.Password);
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(signin); }));
+                Thread thr = new Thread(new ThreadStart(delegate 
+                { 
+                    Android.Gms.Tasks.TasksClass.Await(signin); 
+                }));
                 thr.Start();
                 thr.Join();
                 return signin.IsSuccessful;
@@ -39,12 +36,16 @@ namespace Hermes
             }
 
         }
-        public bool SignUp(UserData u)
+        public static bool SignUp(UserData u)
         {
             Task signup = mAuth.CreateUserWithEmailAndPassword(u.Email, u.Password);
             try
             {
-                Thread thr = new Thread(new ThreadStart(delegate { Android.Gms.Tasks.TasksClass.Await(signup); return; }));
+                Thread thr = new Thread(new ThreadStart(delegate 
+                { 
+                    Android.Gms.Tasks.TasksClass.Await(signup); 
+                    return; 
+                }));
                 thr.Start();
                 thr.Join();
 
@@ -52,7 +53,7 @@ namespace Hermes
                 {
                     if (SignIn(u))
                     {
-                        App.UserManager.RegisterUsername(CurrentUserUid, u.Username);
+                        UserManager.RegisterUsername(u.Username);
 
                     }
                 }
@@ -64,7 +65,7 @@ namespace Hermes
             }
         }
         
-        public string CurrentUserUid { get => mAuth.CurrentUser.Uid; }
+        public static string CurrentUserUid { get => mAuth.CurrentUser.Uid; }
     }
 
 }

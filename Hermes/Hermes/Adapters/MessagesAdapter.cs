@@ -9,6 +9,7 @@ using Firebase.Auth;
 using Firebase.Database;
 using Java.Net;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -20,26 +21,38 @@ namespace Hermes
     public class MessagesAdapter : BaseAdapter<Message>
     {
         private Context sContext;
-        private int chatId;
         private Dictionary<string,Bitmap> images;
-        public MessagesAdapter(Context context,int chatId)
+        private ArrayList downloadedImages;
+        private ArrayList chat;
+        private MessagesConnection _connection;
+        public MessagesAdapter(Context context)
         {
-            sContext = context;
-            this.chatId = chatId;
+            sContext = context; 
+            downloadedImages=new ArrayList();
             images = new Dictionary<string,Bitmap>();
+            chat = new ArrayList();
+            _connection = new MessagesConnection();
+            _connection.MessageAdded += OnNewMessage;
         }
+
+        private void OnNewMessage(object sender, MessageEventArgs e)
+        {
+            chat.Add(e.Message);
+            NotifyDataSetChanged();
+        }
+
         public override Message this[int position]
         {
             get
             {
-                return App.ChatsManager.ChatList[chatId].Messages[position];
+                return (Message)chat[position];
             }
         }
         public override int Count
         {
             get
             {
-                return App.ChatsManager.ChatList[chatId].Messages.Count;
+                return chat.Count;
             }
         }
         public override long GetItemId(int position)
@@ -50,8 +63,9 @@ namespace Hermes
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             View row = convertView;
+            Message m = this[position];
             int res = Resource.Layout.cell_incoming_bubble;
-            if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+            if (m.Type ==MessageType.Outgoing)
             {
                 res = Resource.Layout.cell_outgoing_bubble;
             }
@@ -63,44 +77,55 @@ namespace Hermes
 
                 }
                 TextView message = row.FindViewById<TextView>(Resource.Id.msg_text);
-                message.Text = this[position].Content;
+                message.Text = m.Content;
                 TextView time = row.FindViewById<TextView>(Resource.Id.msg_time);
-                time.Text = TextHelper.UnixToTime(this[position].Timestamp);
+                time.Text = TextHelper.UnixToTime(m.Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
-                if (this[position].ImageUri != "" && this[position].ImageUri != null)
+                
+                if (m.HasImage)
                 {
                     Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.forbidden);
-                    if (this[position].Sender.Equals(App.AuthManager.CurrentUserUid))
+                    if (m.Type== MessageType.Outgoing)
                     {
-                        if (this[position].IsImageSafe)
+                        if (isImageDownloaded(m.Timestamp))
                         {
-                            try
-                            {
-                                bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(this[position].ImageUri)));
-                            }
-                            catch { }
+                            bmImg = images[m.Timestamp];
                         }
-                        img.SetImageBitmap(bmImg);
-                        img.Visibility = ViewStates.Visible;
+                        else
+                        {
+                            if (m.IsImageSafe)
+                            {
+                                try
+                                {
+                                    bmImg = BitmapFactory.DecodeStream(Application.Context.ContentResolver.OpenInputStream(Android.Net.Uri.Parse(m.ImageUri)));
+                                    images[m.Timestamp] = bmImg;
+                                    downloadedImages.Add(m.Timestamp);
+                                }
+                                catch { }
+                            }
+                            images[m.Timestamp] = bmImg;
+                            downloadedImages.Add(m.Timestamp);
+                        }
 
                     }
                     else
                     {
-                        if (App.ChatsManager.ChatList[chatId].Images.ContainsKey(this[position].Timestamp))
+                        if (isImageDownloaded(m.Timestamp))
                         {
-                            bmImg = App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp];
+                            bmImg = images[m.Timestamp];
                         }
-                        else if (this[position].ImageLink != "" && this[position].ImageLink != null)
+                        else
                         {
                             bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.pending);
-                            if (this[position].IsImageSafe)
+                            if (m.IsImageSafe)
                             {
                                 Thread t = new Thread(new ThreadStart(delegate
                                 {
-                                    URL url = new URL(this[position].ImageLink);
+                                    URL url = new URL(m.ImageLink);
                                     Bitmap bmp = BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
-                                    App.ChatsManager.ChatList[chatId].Images[this[position].Timestamp] = bmp;
+                                    images[m.Timestamp] = bmp;
+                                    downloadedImages.Add(m.Timestamp);
                                     ((Activity)sContext).RunOnUiThread(() =>
                                     {
                                         img.SetImageBitmap(bmp);
@@ -130,6 +155,12 @@ namespace Hermes
             finally { }
             return row;
         }
+        private bool isImageDownloaded(string timestamp)
+        {
+            return downloadedImages.Contains(timestamp);
+        }
+            
+        
         public static int dpToPx(int dp, Context context)
         {
             float density = context.Resources.DisplayMetrics.Density;

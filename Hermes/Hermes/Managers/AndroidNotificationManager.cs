@@ -29,7 +29,6 @@ namespace Hermes
 
         NotificationManager manager;
 
-        public event EventHandler NotificationReceived;
 
         public static AndroidNotificationManager Instance { get; private set; }
 
@@ -44,39 +43,9 @@ namespace Hermes
             }
         }
 
-        public void SendNotification(string title, string message, DateTime? notifyTime = null)
-        {
-            if (!channelInitialized)
-            {
-                CreateNotificationChannel();
-            }
 
-            if (notifyTime != null)
-            {
-                Intent intent = new Intent(AndroidApp.Context, typeof(AlarmHandler));
-                intent.PutExtra(TitleKey, title);
-                intent.PutExtra(MessageKey, message);
 
-                PendingIntent pendingIntent = PendingIntent.GetBroadcast(AndroidApp.Context, pendingIntentId++, intent, PendingIntentFlags.CancelCurrent);
-                long triggerTime = GetNotifyTime(notifyTime.Value);
-                AlarmManager alarmManager = AndroidApp.Context.GetSystemService(Context.AlarmService) as AlarmManager;
-                alarmManager.Set(AlarmType.RtcWakeup, triggerTime, pendingIntent);
-            }
-            else
-            {
-                Show(title, message);
-            }
-        }
 
-        public void ReceiveNotification(string title, string message)
-        {
-            var args = new NotificationEventArgs()
-            {
-                Title = title,
-                Message = message,
-            };
-            NotificationReceived?.Invoke(null, args);
-        }
 
         public Notification Create(string title, string message)
         {
@@ -108,19 +77,9 @@ namespace Hermes
 
             return builder.Build();
         }
-        public void Show(string title, string message)
-        {
 
-            manager.Notify(messageId++, Create(title,message));
-        }
 
-        public void DeleteNotification(int id)
-        {
-            Intent intent = new Intent(AndroidApp.Context, typeof(AlarmHandler));
-            PendingIntent pendingIntent = PendingIntent.GetBroadcast(AndroidApp.Context, id, intent, PendingIntentFlags.CancelCurrent| PendingIntentFlags.Immutable);
-            AlarmManager alarmManager = AndroidApp.Context.GetSystemService(Context.AlarmService) as AlarmManager;
-            alarmManager.Cancel(pendingIntent);
-        }
+
 
         void CreateNotificationChannel()
         {
@@ -139,12 +98,5 @@ namespace Hermes
             channelInitialized = true;
         }
 
-        long GetNotifyTime(DateTime notifyTime)
-        {
-            DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(notifyTime);
-            double epochDiff = (new DateTime(1970, 1, 1) - DateTime.MinValue).TotalSeconds;
-            long utcAlarmTime = utcTime.AddSeconds(-epochDiff).Ticks / 10000;
-            return utcAlarmTime; // milliseconds
-        }
     }
 }

@@ -14,25 +14,31 @@ using System.Text;
 
 namespace Hermes
 {
-    public class ChatAdapter : BaseAdapter<Chat>
+    public class ChatAdapter : BaseAdapter<ChatSimplified>
     {
         private Context sContext;
-        public ChatAdapter(Context context)
+        private List<ChatSimplified> mSimplifiedList;
+        
+        public ChatAdapter(Context context,List<ChatSimplified> l)
         {
             sContext = context;
+            mSimplifiedList = l.ToList();
         }
-        public override Chat this[int position]
+
+
+
+        public override ChatSimplified this[int position]
         {
             get
             {
-                return App.ChatsManager.ChatList[position];
+                return mSimplifiedList[position];
             }
         }
         public override int Count
         {
             get
             {
-                return App.ChatsManager.ChatList.Count;
+                return mSimplifiedList.Count;
             }
         }
         public override long GetItemId(int position)
@@ -53,9 +59,9 @@ namespace Hermes
                 TextView name = row.FindViewById<TextView>(Resource.Id.chat_name);
                 TextView content = row.FindViewById<TextView>(Resource.Id.chat_content);
                 TextView time = row.FindViewById<TextView>(Resource.Id.chat_time);
-                name.Text = App.UserManager.UsernameById[this[position].Partner];
-                content.Text = this[position].Messages.Last().Content;
-                time.Text = TextHelper.UnixToTime(this[position].Messages.Last().Timestamp);
+                name.Text = UserManager.GetUsername(this[position].Partner);
+                content.Text = this[position].LatestMessageContent;
+                time.Text = TextHelper.UnixToTime(this[position].LatestMessageTimestamp);
             }
             catch (Exception ex)
             {

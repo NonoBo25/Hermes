@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Hermes
 {
-    static class SharedPrefrenceManager
+    public static class SharedPrefrenceManager
     {
         public static void SaveUser(UserData u)
         {

@@ -25,30 +25,38 @@ namespace Hermes
     [Activity(Label = "ChatActivity")]
     public class ChatActivity : Activity
     {
-        private int chatId;
+        private string partner;
         private ListView mMessages;
         private TextView mUser;
         private EditText mMessage;
         private FloatingActionButton mSend;
         private FloatingActionButton mAttach;
         private Android.Net.Uri uri=null;
+        private ChatModel model;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.activity_chat);
-            App.ChatsManager.PropertyChanged += ChatsManager_PropertyChanged;
-            chatId = Intent.GetIntExtra("chatId", -1);
-            mMessages = FindViewById<ListView>(Resource.Id.messages);
-            mMessages.Adapter = new MessagesAdapter(this, chatId);
-            mUser = FindViewById<TextView>(Resource.Id.chat_username);
-            mUser.Text = App.UserManager.UsernameById[App.ChatsManager.ChatList[chatId].Partner];
-            mMessage = FindViewById<EditText>(Resource.Id.message_input);
             
+            SetContentView(Resource.Layout.activity_chat);
+            //App.ChatsManager.PropertyChanged += ChatsManager_PropertyChanged;
+            partner = Intent.GetStringExtra("partner");
+            model = new ChatModel(partner);
+            
+            mMessages = FindViewById<ListView>(Resource.Id.messages);
+            mMessages.Adapter = new MessagesAdapter(this);
+            mUser = FindViewById<TextView>(Resource.Id.chat_username);
+            mUser.Text = UserManager.GetUsername(partner);
+            mMessage = FindViewById<EditText>(Resource.Id.message_input);
             mSend = FindViewById<FloatingActionButton>(Resource.Id.message_send);
             mSend.Click += MSend_Click;
             mAttach = FindViewById<FloatingActionButton>(Resource.Id.image_attach);
             mAttach.Click += MAttach_Click;
+            mMessages.ScrollingCacheEnabled = true;
+
         }
+
+
+
 
         private void MAttach_Click(object sender, EventArgs e)
         {
@@ -70,7 +78,7 @@ namespace Hermes
                         Application.Context.ContentResolver.TakePersistableUriPermission(uri, ActivityFlags.GrantReadUriPermission) ;
                         Intent intent = new Intent(this,typeof(ImageMessageActivity));
                         intent.PutExtra("path",uri.ToString());
-                        intent.PutExtra("chatId", chatId);
+                        intent.PutExtra("partner", partner);
                         StartActivityForResult(intent, 220);
 
                     }
@@ -80,29 +88,10 @@ namespace Hermes
 
             }
         }
-
-        private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            RunOnUiThread(() =>
-            {
-                ((MessagesAdapter)mMessages.Adapter).NotifyDataSetChanged();
-            });
-
-        }
-
         private void MSend_Click(object sender, EventArgs e)
         {
-            var filter = new ProfanityFilter.ProfanityFilter();
-            var censored = filter.CensorString(mMessage.Text);
-            mMessage.Text = censored;
-            Message m = new Message();
-            m.Sender = App.AuthManager.CurrentUserUid;
-            m.Recipient=App.ChatsManager.ChatList[chatId].Partner;
-            m.Content = mMessage.Text;
-            m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            m.ImageLink = "";
-            m.ImageUri = "";
-            App.ChatsManager.SendMessage(m);
+            mMessage.Text = TextHelper.CensorText(mMessage.Text);
+            model.SendMessage(mMessage.Text);
         }
 
 

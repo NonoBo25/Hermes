@@ -41,7 +41,16 @@ namespace Hermes
             dateTime = dateTime.AddMilliseconds(sec).ToLocalTime();
             return $"{dateTime.Hour}:{dateTime.Minute}";
         }
+        public static string CensorText(string text)
+        {
+            var filter = new ProfanityFilter.ProfanityFilter();
+            string censored = filter.CensorString(text);
+            return censored;
+        }
 
-
+        public static string DefaultValue(string str)
+        {
+            return str == "" || str == null ? "\b" : str;
+        }
     }
 }

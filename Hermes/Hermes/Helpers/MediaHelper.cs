@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hermes
 {
@@ -20,8 +21,8 @@ namespace Hermes
         public static bool isSafe(Android.Net.Uri image)
         {
             TensorflowClassifier cls = new TensorflowClassifier();
-            float[] res=cls.Classify(UriToByteArray(image));
-            return res[0] > res[1];
+            float[] res= cls.Classify(UriToByteArray(image));
+            return res[1] < 0.015;
         }
         private static byte[] UriToByteArray(Android.Net.Uri uri)
         {
@@ -29,7 +30,6 @@ namespace Hermes
             MemoryStream s = new MemoryStream();
             bm.Compress(Bitmap.CompressFormat.Jpeg, 100, s); //bm is the bitmap object
             return s.ToArray();
-
         }
     }
 }

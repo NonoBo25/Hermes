@@ -2,12 +2,14 @@
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
+using Android.Provider;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Google.Android.Material.FloatingActionButton;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +22,8 @@ namespace Hermes
         private ImageView imageView;
         private EditText message;
         private FloatingActionButton btn;
-        private int chatId;
+        private string partner;
+        private ImageMessageModel model;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -30,22 +33,14 @@ namespace Hermes
             btn = FindViewById<FloatingActionButton>(Resource.Id.message_send);
             btn.Click += Btn_Click;
             imgUri = Android.Net.Uri.Parse(Intent.GetStringExtra("path"));
-            chatId = Intent.GetIntExtra("chatId", -1);
+            partner = Intent.GetStringExtra("partner");
+            model = new ImageMessageModel(partner, imgUri);
         }
 
         private void Btn_Click(object sender, EventArgs e)
         {
-            var filter = new ProfanityFilter.ProfanityFilter();
-            var censored = filter.CensorString(message.Text);
-            message.Text = censored;
-            Message m = new Message();
-            m.Sender = App.AuthManager.CurrentUserUid;
-            m.Recipient = App.ChatsManager.ChatList[chatId].Partner;
-            m.Content = message.Text;
-            m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            m.ImageUri = Intent.GetStringExtra("path");
-            m.ImageLink = "";
-            App.ChatsManager.SendMessage(m);
+            message.Text = TextHelper.CensorText(message.Text);
+            model.SendMessage(message.Text);
             Finish();
         }
 
@@ -55,5 +50,6 @@ namespace Hermes
             Bitmap bmImg = BitmapFactory.DecodeStream(ContentResolver.OpenInputStream(imgUri));
             imageView.SetImageBitmap(bmImg);
         }
+
     }
 }

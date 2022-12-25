@@ -48,7 +48,7 @@ namespace Hermes
                 AuthHelper.UserVerificationResult res = AuthHelper.VerifyUserData(tempUser);
                 if (res)
                 {
-                    if (App.AuthManager.SignUp(tempUser))
+                    if (AuthManager.SignUp(tempUser))
                     {
                         SharedPrefrenceManager.SaveUser(tempUser);
                         Intent i = new Intent(this, typeof(MainPageActivity));

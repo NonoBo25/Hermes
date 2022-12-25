@@ -18,11 +18,12 @@ using System.Text;
 namespace Hermes
 {
     [Service(Name ="com.nonobo.hermes.CommunicationService",Enabled =true,Exported =true)]
-    public class CommunicationService : Service,IOnCompleteListener
+    public class CommunicationService : Service
     {
         private AndroidNotificationManager notificationManager;
         static readonly string TAG = typeof(CommunicationService).FullName;
         NotificationManager SysNotificationManager;
+        private MessagesConnection _connection;
         
         public IBinder Binder { get; private set; }
         public override IBinder OnBind(Intent intent)
@@ -43,24 +44,19 @@ namespace Hermes
             Log.Info(TAG, "created notification Manager");
             if (SharedPrefrenceManager.IsLoggedIn())
             {
-                if (App.AuthManager.SignIn(SharedPrefrenceManager.GetLoggedUser()))
+                if (AuthManager.SignIn(SharedPrefrenceManager.GetLoggedUser()))
                 {
-                    App.ChatsManager.Start();
+                    _connection = new MessagesConnection();
+                    _connection.IncomingMessage += OnIncomingMessage;
                 }
             }
-            App.ChatsManager.PropertyChanged += ChatsManager_PropertyChanged;
             
         }
 
-        private void ChatsManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnIncomingMessage(object sender, MessageEventArgs e)
         {
-            Log.Debug(TAG, "New Message");
-            if (e.PropertyName == "In")
-            {
-                Log.Debug(TAG, "New Incoming Message");
-                Random r = new Random();
-                SysNotificationManager.Notify(r.Next(0, 1000), notificationManager.Create("New Messages", "You Have New Messages"));
-            }
+            Random r = new Random();
+            SysNotificationManager.Notify(r.Next(0, 1000), notificationManager.Create("New Messages", "You Have New Messages"));
         }
 
         public override bool OnUnbind(Intent intent)
@@ -74,20 +70,5 @@ namespace Hermes
             Intent i = new Intent(this, typeof(CommunicationService));
             StartForegroundService(i);
         }
-
-
-
-        public void OnComplete(Task task)
-        {
-            if (task.IsSuccessful)
-            {
-                if (App.ChatsManager == null)
-                {
-                    App.ChatsManager = new ChatsManager();
-                }
-            }
-        }
-
-
     }
 }

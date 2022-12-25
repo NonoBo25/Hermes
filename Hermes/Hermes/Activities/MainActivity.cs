@@ -22,12 +22,10 @@ namespace Hermes
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            App.init();
+            
             if (SharedPrefrenceManager.IsFirstTime())
             {
                 SharedPrefrenceManager.FirstTime();
-            
-
             }
             mAuth = FirebaseAuth.Instance;
             Intent i = new Intent(this, typeof(MainPageActivity));
@@ -37,7 +35,7 @@ namespace Hermes
                 if (mAuth.CurrentUser == null)
                 {
                     UserData loggedUser = SharedPrefrenceManager.GetLoggedUser();
-                    if (!App.AuthManager.SignIn(loggedUser))
+                    if (!AuthManager.SignIn(loggedUser))
                     {
                         Toast.MakeText(this, "Could Not Log In!", ToastLength.Long).Show();
                         i = new Intent(this, typeof(AuthMenuActivity));

@@ -14,47 +14,87 @@ using System.Threading;
 
 namespace Hermes
 {
-    public class UserManager : Java.Lang.Object,IValueEventListener
+    public static class UserManager
     {
-        private DatabaseReference mRef;
-        private Dictionary<string, string> usernameById;
-        private Dictionary<string, string> idByUsername;
-
-
-        public UserManager()
+        private static DatabaseReference mRef = FirebaseDatabase.Instance.GetReference("/users");
+        public static bool RegisterUsername(string Username)
         {
-            mRef = FirebaseDatabase.Instance.GetReference("/users");
-            mRef.AddValueEventListener(this);
-            usernameById = new Dictionary<string, string>();
-            idByUsername = new Dictionary<string, string>();
-        }
-
-        public Dictionary<string, string> UsernameById { get => usernameById; }
-        public Dictionary<string, string> IdByUsername { get => idByUsername; }
-
-        public void OnCancelled(DatabaseError error)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void OnDataChange(DataSnapshot snapshot)
-        {
-            foreach (DataSnapshot i in snapshot.Children.ToEnumerable())
+            Task registerUsername = mRef.Child(AuthManager.CurrentUserUid).SetValue(FirebaseLib.JavaCSHelper.ObjectToHashMap(Username));
+            try
             {
-                usernameById[i.Key.ToString()] = i.Value.ToString();
-                idByUsername[i.Value.ToString()] = i.Key.ToString();
+                Thread thr = new Thread(new ThreadStart(delegate
+                {
+                    Android.Gms.Tasks.TasksClass.Await(registerUsername);
+                    return;
+                }));
+                thr.Start();
+                thr.Join();
+                return registerUsername.IsSuccessful;
+            }
+            catch
+            {
+                return false;
             }
         }
-        public bool Exists(string uname)
+        public static string GetUsername(string uid)
         {
-            return IdByUsername.ContainsKey(uname);
-        }
+            Task getUsername = mRef.Child(uid).Get();
+            try
+            {
+                Thread thr = new Thread(new ThreadStart(delegate
+                {
+                    Android.Gms.Tasks.TasksClass.Await(getUsername);
+                    return;
+                }));
+                thr.Start();
+                thr.Join();
+                try
+                {
 
-        public void RegisterUsername(string uid,string username)
+                    return ((DataSnapshot)getUsername.Result).Value.ToString();
+                }
+                catch
+                {
+                    return null ;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static string GetUid(string username)
         {
-            mRef.Child(uid).SetValue(new Java.Lang.String(username));
+            Task GetUid = mRef.OrderByValue().EqualTo(username).Get() ;
+            try
+            {
+                Thread thr = new Thread(new ThreadStart(delegate
+                {
+                    Android.Gms.Tasks.TasksClass.Await(GetUid);
+                    return;
+                }));
+                thr.Start();
+                thr.Join();
+                try
+                {
+                    DataSnapshot snapshot= (DataSnapshot)GetUid.Result;
+                    Java.Util.HashMap m = (snapshot.Value.JavaCast<Java.Util.HashMap>());
+                    List<string> keys = new List<string>();
+                    foreach(string key in m.KeySet())
+                    {
+                        keys.Add(key);
+                    }
+                    return keys[0];
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+            catch
+            {
+                return "";
+            }
         }
-
     }
 }

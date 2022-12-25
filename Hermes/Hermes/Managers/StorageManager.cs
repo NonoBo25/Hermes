@@ -17,14 +17,11 @@ using System.IO;
 
 namespace Hermes
 {
-    public class StorageManager
+    public static class StorageManager
     {
-        FirebaseStorage mStorage;
-        public StorageManager()
-        {
-            mStorage = FirebaseStorage.Instance;
-        }
-        public bool UploadFile(Android.Net.Uri file,string uid)
+        static FirebaseStorage mStorage = FirebaseStorage.Instance;
+
+        public static bool UploadFile(Android.Net.Uri file,string uid)
         {
             DocumentFile f = DocumentFile.FromSingleUri(Application.Context, file);
             Stream  s= Application.Context.ContentResolver.OpenInputStream(file);
@@ -32,7 +29,7 @@ namespace Hermes
             try
             {
                 Thread thr = new Thread(new ThreadStart(delegate { 
-                    Android.Gms.Tasks.TasksClass.Await(upload); 
+                    TasksClass.Await(upload); 
                     return; 
                 }));
                 thr.Start();
@@ -45,11 +42,10 @@ namespace Hermes
             }
         }
 
-        public bool GetFileLink(string fileName,out string link)
+        public static bool GetFileLink(string fileName,out string link)
         {
             link = "";
-            Task download = mStorage.Reference.Child("files/" + App.AuthManager.CurrentUserUid + "/" + fileName+".jpg").GetDownloadUrl(); 
-
+            Task download = mStorage.Reference.Child("files/" + AuthManager.CurrentUserUid + "/" + fileName+".jpg").GetDownloadUrl(); 
             try
             {
                 Thread thr = new Thread(new ThreadStart(delegate {Android.Gms.Tasks.TasksClass.Await(download);return;}));
