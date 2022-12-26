@@ -35,14 +35,14 @@ namespace Hermes
     public class ChatModel
     {
         public event EventHandler<NewMessageEventArgs> NewMessage;
-        private MessagesConnection _connection;
+        private MessagesConnection _messagesConnection;
         private string _partner;
         
         public ChatModel(string partner)
         {
             _partner = partner;
-            _connection = new MessagesConnection();
-            _connection.MessageAdded += OnNewMessage;
+            _messagesConnection = new MessagesConnection();
+            _messagesConnection.MessageAdded += OnNewMessage;            
         }
 
         private void OnNewMessage(object sender, MessageEventArgs e)
@@ -63,7 +63,7 @@ namespace Hermes
             m.Recipient = _partner;
             m.Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             m.HasImage = false;
-            _connection.SendMessage(m);
+            _messagesConnection.SendMessage(m);
         }
     }
 }

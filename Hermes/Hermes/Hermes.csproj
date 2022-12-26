@@ -70,6 +70,7 @@
     <Compile Include="Activities\AuthMenuActivity.cs" />
     <Compile Include="Activities\ChatActivity.cs" />
     <Compile Include="Activities\ImageMessageActivity.cs" />
+    <Compile Include="Activities\ImageViewerActivity.cs" />
     <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Activities\MainPageActivity.cs" />
     <Compile Include="Activities\Models\ChatModel.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Activities\SignUpActivity.cs" />
     <Compile Include="Adapters\ChatsAdapter.cs" />
     <Compile Include="Adapters\MessagesAdapter.cs" />
+    <Compile Include="Adapters\UsersAdapter.cs" />
     <Compile Include="MessagesConnection.cs" />
     <Compile Include="FirebaseLib.cs" />
     <Compile Include="Helpers\MessagesHelper.cs" />
@@ -101,6 +103,7 @@
     <Compile Include="Managers\SharedPrefrenceManager.cs" />
     <Compile Include="Helpers\TextHelper.cs" />
     <Compile Include="Services\CommunicationService\ForegroundNotificationHelper.cs" />
+    <Compile Include="UsersConnection.cs" />
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
@@ -263,6 +266,18 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\forbidden.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\cell_username.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_image_viewer.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\download_icon.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\share_icon.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -1,17 +1,20 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
 using Firebase.Database;
+using Java.IO;
 using Java.Net;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -82,9 +85,13 @@ namespace Hermes
                 time.Text = TextHelper.UnixToTime(m.Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
-                
+                img.Clickable = false;
+                img.Click += Img_Click;
                 if (m.HasImage)
                 {
+                    if (m.IsImageSafe) {
+                        img.Clickable = true;
+                    }
                     Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.forbidden);
                     if (m.Type== MessageType.Outgoing)
                     {
@@ -128,7 +135,7 @@ namespace Hermes
                                     downloadedImages.Add(m.Timestamp);
                                     ((Activity)sContext).RunOnUiThread(() =>
                                     {
-                                        img.SetImageBitmap(bmp);
+                                        img.SetImageBitmap(images[m.Timestamp]);
                                         img.Visibility = ViewStates.Visible;
                                     });
                                 }));
@@ -137,10 +144,11 @@ namespace Hermes
 
                         }
                     }
-                    img.SetImageBitmap(bmImg);
+                    img.SetImageBitmap(images[m.Timestamp]);
                     img.Visibility = ViewStates.Visible;
                     img.LayoutParameters.Width = dpToPx(200, sContext);
                     img.LayoutParameters.Height = dpToPx(200, sContext);
+                    
                 }
                 else
                 {
@@ -155,6 +163,25 @@ namespace Hermes
             finally { }
             return row;
         }
+
+        private void Img_Click(object sender, EventArgs e)
+        {
+            ImageView sen = (ImageView)sender;
+            Bitmap bitmap = ((BitmapDrawable)sen.Drawable).Bitmap;
+
+            string fileName = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "temp.jpg");
+            MediaHelper.DownloadBitmap(fileName, bitmap, sContext);
+            Intent i = new Intent(sContext, typeof(ImageViewerActivity));
+            i.PutExtra("bitmap", fileName);
+            sContext.StartActivity(i);
+
+        }
+
+        private void Row_Click(object sender, EventArgs e)
+        {
+            
+        }
+
         private bool isImageDownloaded(string timestamp)
         {
             return downloadedImages.Contains(timestamp);

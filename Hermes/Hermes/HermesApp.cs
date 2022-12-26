@@ -16,18 +16,11 @@ namespace Hermes
     [Application]
     public class HermesApp:Application
     {
-
         protected HermesApp(System.IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         { }
-
         public override void OnCreate()
         {
             base.OnCreate();
         }
-        public void StartService()
-        {
-        }
-
-
     }
 }

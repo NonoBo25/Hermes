@@ -9,8 +9,8 @@
     android:textDirection="ltr">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="200">
+        android:layout_weight="200"
+        android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,24 +35,15 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/message_input"
-            android:layout_weight="9"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="16dp"
-            android:hint="Type Here"
-            android:layout_margin="5dp"
-            android:layout_marginBottom="7dp"
-            android:background="@drawable/rounded_edittext"/>
+        android:orientation="horizontal"
+        android:gravity="center">
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:background="@color/seed"
-            android:id="@+id/message_send"
+            android:id="@+id/download"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:src="@drawable/send_icon"
+            android:src="@drawable/download_icon"
              />
     </LinearLayout>
 </LinearLayout>
