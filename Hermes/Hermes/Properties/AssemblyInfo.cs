@@ -16,6 +16,7 @@ using Android.App;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 
+
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
@@ -24,3 +25,4 @@ using Android.App;
 //      Revision
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
