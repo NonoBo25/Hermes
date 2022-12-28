@@ -4,6 +4,7 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
@@ -28,20 +29,39 @@ namespace Hermes
         private ArrayList downloadedImages;
         private ArrayList chat;
         private MessagesConnection _connection;
-        public MessagesAdapter(Context context)
+        private string _partner;
+        public MessagesAdapter(Context context,string partner)
         {
             sContext = context; 
+            _partner = partner;
             downloadedImages=new ArrayList();
             images = new Dictionary<string,Bitmap>();
             chat = new ArrayList();
-            _connection = new MessagesConnection();
+            _connection = new MessagesConnection(_partner);
             _connection.MessageAdded += OnNewMessage;
         }
 
         private void OnNewMessage(object sender, MessageEventArgs e)
         {
+            //string partner = "";
+            //if (e.Message.Type == MessageType.Incoming)
+            //{
+            //    partner = e.Message.Sender;
+            //}
+            //if (e.Message.Type == MessageType.Outgoing)
+            //{
+            //    partner = e.Message.Recipient;
+            //}
+            //if(partner != _partner)
+            //{
+            //    return;
+            //}
             chat.Add(e.Message);
             NotifyDataSetChanged();
+        }
+        public Bitmap GetPosBitmap(int pos)
+        {
+            return images[((Message)chat[pos]).Timestamp];
         }
 
         public override Message this[int position]
@@ -85,13 +105,8 @@ namespace Hermes
                 time.Text = TextHelper.UnixToTime(m.Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
-                img.Clickable = false;
-                img.Click += Img_Click;
                 if (m.HasImage)
                 {
-                    if (m.IsImageSafe) {
-                        img.Clickable = true;
-                    }
                     Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.forbidden);
                     if (m.Type== MessageType.Outgoing)
                     {
@@ -109,7 +124,9 @@ namespace Hermes
                                     images[m.Timestamp] = bmImg;
                                     downloadedImages.Add(m.Timestamp);
                                 }
-                                catch { }
+                                catch(Exception e) {
+                                    Log.Error("ERROR",e.StackTrace);
+                                }
                             }
                             images[m.Timestamp] = bmImg;
                             downloadedImages.Add(m.Timestamp);
@@ -148,7 +165,6 @@ namespace Hermes
                     img.Visibility = ViewStates.Visible;
                     img.LayoutParameters.Width = dpToPx(200, sContext);
                     img.LayoutParameters.Height = dpToPx(200, sContext);
-                    
                 }
                 else
                 {
@@ -164,18 +180,7 @@ namespace Hermes
             return row;
         }
 
-        private void Img_Click(object sender, EventArgs e)
-        {
-            ImageView sen = (ImageView)sender;
-            Bitmap bitmap = ((BitmapDrawable)sen.Drawable).Bitmap;
 
-            string fileName = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "temp.jpg");
-            MediaHelper.DownloadBitmap(fileName, bitmap, sContext);
-            Intent i = new Intent(sContext, typeof(ImageViewerActivity));
-            i.PutExtra("bitmap", fileName);
-            sContext.StartActivity(i);
-
-        }
 
         private void Row_Click(object sender, EventArgs e)
         {

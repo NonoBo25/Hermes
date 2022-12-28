@@ -29,7 +29,6 @@ namespace Hermes
             _bitmap = BitmapFactory.DecodeFile(path);
             _imageView = FindViewById<ImageView>(Resource.Id.img);
             _imageView.SetImageBitmap(_bitmap);
-            
             _download = FindViewById<FloatingActionButton>(Resource.Id.download);
             _download.Click += Download;
         }

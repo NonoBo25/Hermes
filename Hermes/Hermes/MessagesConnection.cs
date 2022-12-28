@@ -37,11 +37,26 @@ namespace Hermes
         public event EventHandler<MessageEventArgs> OutgoingMessage;
         public event EventHandler MessageDeleted;
         public event EventHandler MessageUpdated;
+        private string _partner;
+
+        
         public MessagesConnection() : base(PATH+AuthManager.CurrentUserUid)
         {
+            _partner = null;
+        }
+        public MessagesConnection(string partner) : base(PATH + AuthManager.CurrentUserUid)
+        {
+            _partner = partner;
         }
         private void OnNewMessage(Message m)
         {
+            if (_partner != null)
+            {
+                if (m.GetPartner() != _partner)
+                {
+                    return;
+                }
+            }
             switch (m.Type)
             {
                 case MessageType.Incoming:
