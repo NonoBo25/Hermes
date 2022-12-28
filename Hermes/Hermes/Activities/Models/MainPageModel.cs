@@ -86,7 +86,8 @@ namespace Hermes
 
         public string GetPartner(int position)
         {
-            return _messages.Keys.ToList()[position];
+            return _messages.Keys.ToList().OrderBy(x => long.Parse(_messages[x].Timestamp)).ToList()[position];
+            
         }
 
         private void OnNewMessage(object sender, MessageEventArgs e)
