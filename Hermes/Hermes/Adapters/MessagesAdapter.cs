@@ -1,17 +1,21 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
 using Firebase.Database;
+using Java.IO;
 using Java.Net;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,20 +29,39 @@ namespace Hermes
         private ArrayList downloadedImages;
         private ArrayList chat;
         private MessagesConnection _connection;
-        public MessagesAdapter(Context context)
+        private string _partner;
+        public MessagesAdapter(Context context,string partner)
         {
             sContext = context; 
+            _partner = partner;
             downloadedImages=new ArrayList();
             images = new Dictionary<string,Bitmap>();
             chat = new ArrayList();
-            _connection = new MessagesConnection();
+            _connection = new MessagesConnection(_partner);
             _connection.MessageAdded += OnNewMessage;
         }
 
         private void OnNewMessage(object sender, MessageEventArgs e)
         {
+            //string partner = "";
+            //if (e.Message.Type == MessageType.Incoming)
+            //{
+            //    partner = e.Message.Sender;
+            //}
+            //if (e.Message.Type == MessageType.Outgoing)
+            //{
+            //    partner = e.Message.Recipient;
+            //}
+            //if(partner != _partner)
+            //{
+            //    return;
+            //}
             chat.Add(e.Message);
             NotifyDataSetChanged();
+        }
+        public Bitmap GetPosBitmap(int pos)
+        {
+            return images[((Message)chat[pos]).Timestamp];
         }
 
         public override Message this[int position]
@@ -82,7 +105,6 @@ namespace Hermes
                 time.Text = TextHelper.UnixToTime(m.Timestamp);
                 ImageView img = row.FindViewById<ImageView>(Resource.Id.msg_image);
                 img.Visibility = ViewStates.Invisible;
-                
                 if (m.HasImage)
                 {
                     Bitmap bmImg = BitmapFactory.DecodeResource(sContext.Resources, Resource.Drawable.forbidden);
@@ -102,7 +124,9 @@ namespace Hermes
                                     images[m.Timestamp] = bmImg;
                                     downloadedImages.Add(m.Timestamp);
                                 }
-                                catch { }
+                                catch(Exception e) {
+                                    Log.Error("ERROR",e.StackTrace);
+                                }
                             }
                             images[m.Timestamp] = bmImg;
                             downloadedImages.Add(m.Timestamp);
@@ -128,7 +152,7 @@ namespace Hermes
                                     downloadedImages.Add(m.Timestamp);
                                     ((Activity)sContext).RunOnUiThread(() =>
                                     {
-                                        img.SetImageBitmap(bmp);
+                                        img.SetImageBitmap(images[m.Timestamp]);
                                         img.Visibility = ViewStates.Visible;
                                     });
                                 }));
@@ -137,7 +161,7 @@ namespace Hermes
 
                         }
                     }
-                    img.SetImageBitmap(bmImg);
+                    img.SetImageBitmap(images[m.Timestamp]);
                     img.Visibility = ViewStates.Visible;
                     img.LayoutParameters.Width = dpToPx(200, sContext);
                     img.LayoutParameters.Height = dpToPx(200, sContext);
@@ -155,6 +179,14 @@ namespace Hermes
             finally { }
             return row;
         }
+
+
+
+        private void Row_Click(object sender, EventArgs e)
+        {
+            
+        }
+
         private bool isImageDownloaded(string timestamp)
         {
             return downloadedImages.Contains(timestamp);

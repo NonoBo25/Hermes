@@ -28,12 +28,21 @@ namespace FirebaseLib
     }
     public static class FirebaseHelper
     {
-        public static T SnapshotToObject<T>(DataSnapshot snap)
+        public static T SnapshotToObject<T>(DataSnapshot snap) 
         {
-            Java.Util.HashMap d = snap.Value.JavaCast<Java.Util.HashMap>();
-            return JavaCSHelper.HashMapToObject<T>(d);
+            try
+            {
+                Java.Util.HashMap d = snap.Value.JavaCast<Java.Util.HashMap>();
+                return JavaCSHelper.HashMapToObject<T>(d);
+            }
+            catch
+            {
+                return (T)Convert.ChangeType(snap.Value.ToString(), typeof(T));
+            }
+
         }
     }
+
     public class FirebaseDatabaseErrorEventArgs : EventArgs
     {
 
@@ -75,6 +84,7 @@ namespace FirebaseLib
 
         public void OnChildAdded(DataSnapshot snapshot, string previousChildName)
         {
+
             OnChildAdded(snapshot.Key,FirebaseHelper.SnapshotToObject<T>(snapshot));
         }
 

@@ -38,6 +38,11 @@ namespace Hermes
         public bool HasImage;
 
         public string ImageLink;
+
+        public string GetPartner()
+        {
+            return Type == MessageType.Incoming ? Sender : Recipient;
+        }
     }
 
 }

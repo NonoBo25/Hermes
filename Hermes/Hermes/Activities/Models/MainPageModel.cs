@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
+
 namespace Hermes
 {
     public class ChatSimplified
@@ -36,12 +38,41 @@ namespace Hermes
     public class MainPageModel
     {
         public event EventHandler<MainPageEventArgs> DataChanged;
-        MessagesConnection _connection;
+        MessagesConnection _messagesConnection;
+        UsersConnection _usersConnection;
         Dictionary<string,Message> _messages;
+        List<string> _usernames;
+        Dictionary<string, string> _uidByUsername;
         public MainPageModel() { 
-            _connection = new MessagesConnection();
-            _connection.MessageAdded += OnNewMessage;
+            _messagesConnection = new MessagesConnection();
+            _messagesConnection.MessageAdded += OnNewMessage;
             _messages = new Dictionary<string, Message>();
+            _usersConnection = new UsersConnection();
+            _usersConnection.UserAdded += OnNewUser;
+            _usernames = new List<string>();
+            _uidByUsername = new Dictionary<string, string>();
+        }
+
+        private void OnNewUser(object sender, UserEventArgs e)
+        {
+            _usernames.Add(e.UserName);
+            _uidByUsername[e.UserName] = e.Uid;
+        }
+        public string[] SearchUser(string query)
+        {
+            List<string> res = new List<string>();
+            foreach(string user in _usernames)
+            {
+                if (user.ToLower().Contains(query.ToLower()))
+                {
+                    res.Add(user);
+                }
+            }
+            return res.ToArray<string>();
+        }
+        public string GetUidFromUsername(string username)
+        {
+            return _uidByUsername[username];
         }
         private void OnDataChange()
         {
@@ -55,7 +86,8 @@ namespace Hermes
 
         public string GetPartner(int position)
         {
-            return _messages.Keys.ToList()[position];
+            return _messages.Keys.ToList().OrderBy(x => long.Parse(_messages[x].Timestamp)).ToList()[position];
+            
         }
 
         private void OnNewMessage(object sender, MessageEventArgs e)

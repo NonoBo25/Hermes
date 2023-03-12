@@ -13,14 +13,12 @@ using System.Text;
 using System.Threading;
 namespace Hermes
 {
-
     public enum MessageEventType
     {
         NewMessage,
         MessageDeleted,
         MessageUpdated
     }
-
     public class MessageEventArgs
     {
         public MessageEventType EventType { get; private set; }
@@ -31,7 +29,6 @@ namespace Hermes
             Message = m;
         }
     }
-    
     public class MessagesConnection : FirebaseLib.FirebaseDatabaseConnection<Message>
     {
         private const string PATH = "/messages/";
@@ -40,12 +37,26 @@ namespace Hermes
         public event EventHandler<MessageEventArgs> OutgoingMessage;
         public event EventHandler MessageDeleted;
         public event EventHandler MessageUpdated;
+        private string _partner;
+
+        
         public MessagesConnection() : base(PATH+AuthManager.CurrentUserUid)
         {
+            _partner = null;
         }
-
+        public MessagesConnection(string partner) : base(PATH + AuthManager.CurrentUserUid)
+        {
+            _partner = partner;
+        }
         private void OnNewMessage(Message m)
         {
+            if (_partner != null)
+            {
+                if (m.GetPartner() != _partner)
+                {
+                    return;
+                }
+            }
             switch (m.Type)
             {
                 case MessageType.Incoming:
@@ -60,7 +71,6 @@ namespace Hermes
             }
             MessageAdded?.Invoke(this, new MessageEventArgs(MessageEventType.NewMessage, m));
         }
-
         protected override void OnCancelled(DatabaseException error)
         {
             
@@ -70,21 +80,16 @@ namespace Hermes
         {
             OnNewMessage(newChild);
         }
-
         protected override void OnChildChanged(string id, Message NewChild)
         {
             
         }
-
         protected override void OnChildMoved(string id, Message NewChild)
         {
         }
-
         protected override void OnChildRemoved(string id, Message removedChild)
         {
         }
-
-
         private bool UploadMessageImage(Message m)
         {
             Android.Net.Uri uri = Android.Net.Uri.Parse(new String(m.ImageUri));
