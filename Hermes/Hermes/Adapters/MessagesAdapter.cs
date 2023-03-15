@@ -97,7 +97,6 @@ namespace Hermes
                 if (row == null)
                 {
                     row = LayoutInflater.From(sContext).Inflate(res, null, false);
-
                 }
                 TextView message = row.FindViewById<TextView>(Resource.Id.msg_text);
                 message.Text = m.Content;

@@ -109,6 +109,7 @@ namespace Hermes
         {
             mMessage.Text = TextHelper.CensorText(mMessage.Text);
             model.SendMessage(mMessage.Text);
+            mMessage.Text = "";
         }
 
 

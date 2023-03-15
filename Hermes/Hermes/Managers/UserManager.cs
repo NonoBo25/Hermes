@@ -20,21 +20,7 @@ namespace Hermes
         public static bool RegisterUsername(string Username)
         {
             Task registerUsername = mRef.Child(AuthManager.CurrentUserUid).SetValue(Username);
-            try
-            {
-                Thread thr = new Thread(new ThreadStart(delegate
-                {
-                    Android.Gms.Tasks.TasksClass.Await(registerUsername);
-                    return;
-                }));
-                thr.Start();
-                thr.Join();
-                return registerUsername.IsSuccessful;
-            }
-            catch
-            {
-                return false;
-            }
+            return true;
         }
         public static string GetUsername(string uid)
         {
