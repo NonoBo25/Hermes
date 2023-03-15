@@ -19,7 +19,7 @@ namespace Hermes
         private static DatabaseReference mRef = FirebaseDatabase.Instance.GetReference("/users");
         public static bool RegisterUsername(string Username)
         {
-            Task registerUsername = mRef.Child(AuthManager.CurrentUserUid).SetValue(FirebaseLib.JavaCSHelper.ObjectToHashMap(Username));
+            Task registerUsername = mRef.Child(AuthManager.CurrentUserUid).SetValue(Username);
             try
             {
                 Thread thr = new Thread(new ThreadStart(delegate

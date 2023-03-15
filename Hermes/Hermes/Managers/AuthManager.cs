@@ -59,7 +59,7 @@ namespace Hermes
                 }
                 return signup.IsSuccessful;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
